@@ -18,10 +18,15 @@ const MUSIC = {
 
 /* ── 화면 맞춤: 1920px 폭 기준을 창 폭에 맞게 확대/축소 ── */
 const stage = document.getElementById('stage');
+/* 1080 디자인 중 맨 위 87px(주소창 자리)는 원래 안 보이도록 설계됨.
+   창 폭에 맞춰 배율을 정하고, 높이가 모자라면 위쪽을 잘라 아래쪽은 끝까지 보이게 한다. */
+const ADDRESS_BAR = 87, DESIGN_H = 1080;
 function fit(){
   const z = window.innerWidth / 1920;
+  const h = window.innerHeight / z;                 // 화면에 보이는 높이(디자인 px)
   stage.style.setProperty('--z', z);
-  stage.style.height = (window.innerHeight / z) + 'px';
+  stage.style.height = h + 'px';
+  stage.style.setProperty('--shift', Math.max(0, DESIGN_H - h) + 'px');
 }
 fit();
 window.addEventListener('resize', fit, {passive:true});

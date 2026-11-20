@@ -20,6 +20,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--paper)}
 ::selection{background:rgba(122,18,20,.24);color:inherit}
 
 .stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--paper);zoom:var(--z,1)}
+/* 디자인 위쪽 87px는 브라우저 주소창에 가려지는 영역.
+   화면이 1080보다 짧으면 위쪽부터 잘라내고 아래쪽은 항상 끝까지 보이게 함 (--shift 는 news.js 가 계산) */
+.frame{position:absolute;left:0;right:0;top:calc(-1 * var(--shift,0px));bottom:0}
 
 /* 인쇄 질감 */
 .ink{filter:url(#ink)}
@@ -39,14 +42,14 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--paper)}
   white-space:nowrap;color:transparent;transform-origin:0 50%;transform:scaleX(var(--sx,1))}
 .sel .ln.caps{font-size:calc(var(--lh) * 1.42)}
 a.hd{cursor:pointer}
-.hd:hover .glyph,.hd:focus-visible .glyph{background:var(--red)}
+a.hd:hover .glyph,a.hd:focus-visible .glyph{background:var(--red)}   /* 링크 걸린 제목만 */
 .hd:focus-visible{outline:none}
 
 /* ── 고정 머리 영역 ── */
 .masthead{position:relative;height:457px;z-index:5}
 .hd-abs{position:absolute;margin:0}
 .hd-motto{left:170px;top:139px}
-.hd-masthead{left:548px;top:116px}     /* 가운데 정렬 (PSD 551 → 548) */
+.hd-masthead{left:545px;top:116px}     /* 가운데 정렬 */
 .hd-edition{left:1556px;top:126px}
 .hd-weather{left:1549px;top:157px}
 .hd-temps{left:1528px;top:191px}
@@ -103,7 +106,7 @@ hr{margin:0;border:0}
   transition:color var(--fade) ease;-webkit-text-stroke:.25px currentColor}
 .txt p{margin:0}
 .txt p + p{margin-top:11.2px}
-.txt:hover{color:var(--red)}
+a.txt:hover{color:var(--red)}   /* 링크 걸린 본문만 */
 a.txt{cursor:pointer}
 
 @media (prefers-reduced-motion:reduce){:root{--fade:0s}.pages{scroll-behavior:auto}}
