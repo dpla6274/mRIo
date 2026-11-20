@@ -7,7 +7,7 @@
    ═══════════════════════════════════════════════════════════ */
 const MUSIC = {
   tracks: [
-    { youtube: 'https://www.youtube.com/watch?v=aCi59-y6dNg', title: 'Autumn Leaves' },
+    { youtube: 'https://www.youtube.com/watch?v=aCi59-y6dNg&list=RDaCi59-y6dNg&start_radio=1', title: '' },
     // { youtube: 'https://www.youtube.com/watch?v=XXXXXXXXXXX', title: '' },
     // { file: 'assets/music/my-song.mp3', title: 'My Song' },
   ],
@@ -211,11 +211,14 @@ document.querySelector('.masthead').addEventListener('wheel', e => {
   }
   function toggle(){
     if (!engine && !loading) return load(idx).then(e => e.play());
-    if (!engine) return;
+    if (!engine) return loading.then(e => e.play());   // 제목 받아오는 중에 눌러도 재생
     ui.root.classList.contains('playing') ? engine.pause() : engine.play();
   }
   // 제목은 미리 표시 (유튜브 API는 첫 재생 때 불러옴)
   setTitle(tracks[0].title || (tracks[0].youtube ? '—' : tracks[0].file.split('/').pop()));
+  // 제목을 비워 두면 페이지가 뜬 뒤 유튜브에서 곡 제목을 미리 받아 와 표시 (재생은 ▶를 눌러야 시작)
+  if (!tracks[0].title && tracks[0].youtube && window === window.top)
+    window.addEventListener('load', () => setTimeout(() => { if (!engine && !loading) load(0); }, 600));
 
   ui.play.addEventListener('click', toggle);
   ui.next.addEventListener('click', () => load((idx + 1) % tracks.length).then(e => e.play()));

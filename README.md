@@ -90,3 +90,7 @@ tracks: [
 - 눈: `snow.js`. PSD 구성 그대로 (배경 + 눈) ÷ 노이즈를 WebGL로 실시간 합성 → 커서 근처 눈송이가 비켜났다 돌아옴. 세기는 `PUSH_RADIUS`, `PUSH_POWER`, `RETURN`.
   새 파일: assets/scene-base.png(눈 없는 배경), scene-noise.png(나누기 노이즈), scene-mask.png(노이즈 마스크). WebGL이 안 되면 scene-static.png(정지 화면) 표시.
 - 메인 배경을 PSD(2.psd)에서 다시 합성. 비토리오 이름은 원래 자리에서 빠지고 올린 위치에만 표시 → title-clean-vittorio.png 삭제.
+
+## v17
+- 3면 PSD(ce51f169-3.psd) 반영: "We will be very old, we will be very merry." 아랫부분 잘림 수정.
+- 음악 교체 (aCi59-y6dNg). 제목은 유튜브에서 자동으로 받아 옴 → 직접 정하려면 news.js의 title: '' 에 입력.
