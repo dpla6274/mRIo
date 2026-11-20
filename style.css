@@ -1,0 +1,36 @@
+/* 1920x1080 PSD: desktop monitor-fixed stage; mobile cover with horizontal panning. */
+:root{color-scheme:dark;--red-duration:1.6s}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:"Times New Roman",Tinos,Georgia,serif}
+.viewport{position:relative;width:100%;height:100svh;background:#000;overflow:hidden;touch-action:pan-y}
+.scene{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:0 0;will-change:transform;user-select:none}
+.scene-image{position:absolute;inset:0;width:1920px;height:1080px;display:block;pointer-events:none;user-select:none;-webkit-user-select:none}
+/* Fixed PSD snow is already part of scene-static.png. No snow canvas, timers, animations or scrolling sheets. */
+.hover-layer{position:absolute;z-index:3;display:block;pointer-events:none;user-select:none;transition:clip-path var(--red-duration) cubic-bezier(.45,0,.2,1);will-change:clip-path}
+.hover-maria{mix-blend-mode:multiply;left:458px;top:167px;width:1023px;height:913px;clip-path:inset(100% 0 0 0)}
+.scene[data-hover="maria"] .hover-maria{clip-path:inset(0 0 0 0)}
+.hover-vittorio{mix-blend-mode:screen;left:927px;top:247px;width:616px;height:833px;clip-path:inset(0 0 100% 0)}
+.scene[data-hover="vittorio"] .hover-vittorio{clip-path:inset(0 0 0 0)}
+.title-wipe{position:absolute;display:block;pointer-events:none;user-select:none;transition:clip-path var(--red-duration) cubic-bezier(.45,0,.2,1);will-change:clip-path}
+.title-clean{z-index:5}
+.title-red{z-index:6;mix-blend-mode:difference}
+.title-clean-maria,.title-red-maria{left:35px;top:123px;width:711px;height:86px;clip-path:inset(0 100% 0 0)}
+.scene[data-hover="maria-name"] .title-clean-maria,.scene[data-hover="maria-name"] .title-red-maria{clip-path:inset(0 0 0 0)}
+.title-clean-vittorio,.title-red-vittorio{left:1330px;top:951px;width:555px;height:88px;clip-path:inset(0 0 0 100%)}
+.scene[data-hover="vittorio-name"] .title-clean-vittorio,.scene[data-hover="vittorio-name"] .title-red-vittorio{clip-path:inset(0 0 0 0)}
+.hit-map{position:absolute;inset:0;width:1920px;height:1080px;z-index:10;overflow:visible}
+.hotspot{cursor:pointer;outline:none}
+.hotspot path,.hotspot rect{fill:transparent;stroke:none;pointer-events:all}
+.hotspot:focus-visible{outline:none}
+/* Chronologies are real, visible selectable HTML text, not raster images or an invisible overlay. */
+.chronology{position:absolute;z-index:20;color:#fff;font-family:"Times New Roman",Tinos,Georgia,serif;font-size:22px;font-weight:400;line-height:20.5px;letter-spacing:-.16px;user-select:text;-webkit-user-select:text;cursor:text;white-space:nowrap;mix-blend-mode:difference}
+.chronology p{position:absolute;top:var(--top);margin:0;padding:0;line-height:20.5px;white-space:nowrap}
+.chronology strong{display:block;font-weight:700;line-height:20.5px}
+.chronology span{display:block;line-height:20.5px}
+.chronology::selection,.chronology *::selection{color:white;background:rgba(140,165,230,.52)}
+.maria-copy{left:35px;top:226px;width:548px;height:290px;text-align:left}
+.vittorio-copy{left:1362px;top:692px;width:523px;height:248px;text-align:right}
+.vittorio-copy p{right:0}
+@media (max-width:700px) and (orientation:portrait){.viewport{touch-action:none}}
+@media (prefers-reduced-motion:reduce){.title-wipe,.hover-layer{transition:none!important}}

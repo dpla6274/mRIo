@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>MARIA PARK × VITTORIO</title>
+  <meta name="description" content="MARIA PARK × VITTORIO — private archive">
+  <link rel="preload" as="image" href="assets/scene-static.png">
+  <link rel="stylesheet" href="style.css?v=9">
+  <script src="script.js?v=10" defer></script>
+</head>
+<body>
+ <main class="viewport" id="viewport" aria-label="MARIA PARK × VITTORIO">
+   <div class="scene" id="scene">
+     <!-- 사용자가 제시한 눈이 고정된 원본 합성본. PSD의 Divide/노이즈/블렌딩이 화소에 포함되어 있습니다. -->
+     <img class="scene-image" src="assets/scene-static.png" draggable="false" alt="">
+     <!-- 실제 2(4).psd에 들어 있는 클리핑 호버 이미지; 움직이는 것은 호버 와이프뿐입니다. -->
+     <img class="hover-layer hover-maria" src="assets/hover-maria.png" draggable="false" alt="">
+     <img class="hover-layer hover-vittorio" src="assets/hover-vittorio.png" draggable="false" alt="">
+     <!-- 기존 픽셀 글씨를 다시 겹쳐 쓰지 않도록, 해당 픽셀을 원본 배경으로 덮고 빨간 글씨를 노출. -->
+     <img class="title-wipe title-clean title-clean-maria" src="assets/title-clean-maria.png" draggable="false" alt="">
+     <img class="title-wipe title-red title-red-maria" src="assets/title-red-maria.png" draggable="false" alt="">
+     <img class="title-wipe title-clean title-clean-vittorio" src="assets/title-clean-vittorio.png" draggable="false" alt="">
+     <img class="title-wipe title-red title-red-vittorio" src="assets/title-red-vittorio.png" draggable="false" alt="">
+     <svg class="hit-map" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" aria-label="이미지와 제목 링크">
+  <!-- 인물 클릭 영역은 PSD 호버 이미지의 실제 알파 모양으로 추출. 비토리오 뒤, 마리아 앞 순서. -->
+  <a class="hotspot" data-link="vittorioImage" data-hover="vittorio" aria-label="비토리오 이미지 링크"><path fill-rule="evenodd" d="M999 266 L993 293 L995 299 L1019 300 L1025 324 L1020 324 L1005 309 L996 307 L1006 326 L973 350 L964 375 L969 400 L966 370 L972 355 L986 340 L998 335 L983 366 L982 382 L989 402 L983 376 L994 347 L1012 333 L1027 349 L993 400 L996 418 L990 423 L977 420 L986 426 L927 465 L945 492 L938 517 L946 530 L941 556 L929 584 L933 594 L948 604 L1001 602 L1015 609 L1025 623 L1038 667 L1066 704 L1024 772 L974 880 L966 920 L956 1048 L959 1079 L1541 1079 L1527 991 L1510 941 L1492 905 L1449 835 L1368 732 L1366 718 L1354 715 L1326 686 L1281 617 L1271 616 L1266 607 L1264 583 L1273 558 L1292 538 L1315 524 L1327 504 L1335 479 L1335 497 L1329 516 L1317 535 L1300 549 L1323 532 L1335 505 L1338 476 L1339 514 L1324 545 L1340 523 L1347 492 L1341 435 L1358 463 L1365 486 L1365 508 L1359 522 L1367 512 L1367 464 L1356 431 L1342 408 L1316 379 L1256 342 L1173 300 L1076 260 L1047 256 L1028 262 L1013 278 L1033 262 L1054 259 L1071 263 L1036 273 L1025 284 L1020 299 L999 300 L999 272 L1019 251 Z M1342 455 L1346 470 L1342 508 Z"/></a>
+  <a class="hotspot" data-link="mariaImage" data-hover="maria" aria-label="마리아 이미지 링크"><path fill-rule="evenodd" d="M1453 705 L1446 695 L1406 670 L1389 651 L1385 635 L1366 628 L1354 634 L1343 652 L1303 665 L1121 690 L1065 703 L1040 670 L1016 670 L965 660 L938 650 L874 611 L842 602 L816 600 L807 557 L808 542 L834 551 L849 548 L859 527 L886 501 L888 488 L913 475 L893 424 L898 417 L912 414 L906 415 L903 411 L913 399 L934 394 L958 370 L964 347 L967 349 L963 315 L966 313 L967 318 L969 311 L984 305 L999 305 L1020 314 L1020 310 L1000 305 L1007 304 L998 300 L970 305 L956 263 L931 236 L903 226 L871 228 L876 208 L874 193 L869 183 L848 167 L864 181 L871 195 L871 210 L865 223 L780 194 L744 189 L693 194 L661 212 L630 243 L610 277 L596 319 L563 509 L539 590 L507 668 L487 750 L461 929 L459 1012 L466 1062 L463 1022 L466 916 L477 836 L473 979 L481 1065 L482 1028 L487 1063 L489 1049 L495 1063 L496 1049 L501 1064 L502 1046 L507 1065 L508 1050 L513 1066 L515 1053 L520 1068 L515 934 L528 1015 L529 1066 L543 1028 L549 1060 L554 983 L566 1059 L568 1035 L571 1058 L572 1047 L574 1058 L577 1034 L581 1052 L583 1035 L590 1053 L578 970 L599 1050 L598 1026 L606 1047 L605 1030 L613 1050 L612 1039 L620 1049 L619 1045 L623 1047 L625 1042 L652 1039 L661 1058 L653 1079 L929 1079 L968 880 L963 837 L942 796 L1021 793 L1131 779 L1289 724 L1337 713 L1360 714 L1369 722 L1369 738 L1342 755 L1344 815 L1350 848 L1360 852 L1369 839 L1367 897 L1379 906 L1378 928 L1386 932 L1393 919 L1405 909 L1407 928 L1415 933 L1434 889 L1443 915 L1452 912 L1455 838 L1475 818 L1471 798 L1457 774 Z M533 986 L540 1013 L534 1049 Z M519 920 L529 972 L530 1007 Z M528 888 L539 956 L540 988 L530 936 Z M903 243 L924 249 L945 262 L959 279 L967 306 L960 310 L940 278 Z M878 231 L903 229 L922 234 L949 254 L960 274 L928 248 Z"/></a>
+  <!-- 이름은 인물보다 클릭 우선순위가 높음. 연대기는 링크를 걸지 않음. -->
+  <a class="hotspot" data-link="mariaName" data-hover="maria-name" aria-label="MARIA PARK 이름 링크"><rect x="35" y="120" width="711" height="92"/></a>
+  <a class="hotspot" data-link="vittorioName" data-hover="vittorio-name" aria-label="VITTORIO 이름 링크"><rect x="1330" y="948" width="555" height="95"/></a>
+</svg>
+     <!-- 래스터 글씨가 아닌 실제 선택 가능한 본문. PSD의 문자 레이어 좌표에 맞췄습니다. -->
+     <section class="chronology maria-copy" aria-label="마리아 연대기">
+      <p style="--top:0px"><strong>1920–1922</strong><span>Left the Soviet Union with her family,<br>traveling by way of Harbin before settling in the United States.<br>Spent the remainder of her childhood in America.</span></p>
+      <p style="--top:105px"><strong>1922–1931</strong><span>Studied the violin under her mother.<br>Both parents died in 1931.</span></p>
+      <p style="--top:186px"><strong>1933–1938</strong><span>Little is known of her activities during these years.</span></p>
+      <p style="--top:253px"><strong>1940–</strong><span>Employed as a violinist under Salvatore.</span></p>
+     </section>
+     <section class="chronology vittorio-copy" aria-label="비토리오 연대기">
+      <p style="--top:0px"><strong>1909–1919</strong><span>Raised as an orphan in the slums of New York.</span></p>
+      <p style="--top:64px"><strong>1920</strong><span>Taken in by Silvio Salvatore at ten years of age.<br>Lost his tongue at Silvio's hands.</span></p>
+      <p style="--top:148px"><strong>1920–1939</strong><span>Spent the next two decades in Silvio Salvatore's service.</span></p>
+      <p style="--top:211px"><strong>1940–</strong><span>Assigned as the personal bodyguard of violinist Maria Park.</span></p>
+     </section>
+   </div>
+ </main>
+</body>
+</html>

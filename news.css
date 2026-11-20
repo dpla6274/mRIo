@@ -1,0 +1,109 @@
+/* ───────────────────────────────────────────────────────────
+   The New Yotk Times — 3면/4면 (1920×1080 PSD 기준 좌표)
+   화면 폭에 맞춰 .stage 전체를 zoom 으로 확대/축소합니다.
+   ─────────────────────────────────────────────────────────── */
+:root{
+  --paper:#e3d0c1;
+  --ink:#151110;
+  --red:#7a1214;            /* 호버 시 어두운 빨강 */
+  --line:rgba(0,0,0,.78);   /* PSD 선 레이어와 같은 농도 */
+  --fade:.45s;
+  --mono:"Courier New","Courier Prime",Courier,monospace;   /* 본문 글꼴 (PSD와 동일) */
+  /* 가로 간격: 좌우 여백 58px + 6단 균등 분할 + 단 안쪽 여백 21px */
+  --margin:58px;
+  --colw:calc((1920px - 2 * var(--margin)) / 6);
+  --pad:21px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--paper)}
+.defs{position:absolute;width:0;height:0}
+::selection{background:rgba(122,18,20,.24);color:inherit}
+
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--paper);zoom:var(--z,1)}
+
+/* 인쇄 질감 */
+.ink{filter:url(#ink)}
+.grain{position:absolute;inset:0;z-index:40;pointer-events:none;background:url(assets/news/paper-grain.png) 0 0/512px 512px;mix-blend-mode:multiply;opacity:.9}
+.specks{position:absolute;inset:0;z-index:41;pointer-events:none;background:url(assets/news/ink-specks.png) 37px 11px/512px 512px;opacity:.55}
+
+/* ── 공통: PSD 글리프 마스크 제목 ──
+   .glyph : PSD에 있던 글자 모양 그대로(폰트 동일), 색만 CSS로 바뀜
+   .sel   : 그 위에 겹친 투명 텍스트 → 드래그·복사 가능 */
+.hd{position:relative;display:block;width:var(--w);height:var(--h);margin:var(--mt,0) 0 0 calc((100% - var(--w)) / 2);color:inherit;text-decoration:none;flex:none}
+.glyph{position:absolute;inset:0;background:var(--ink);
+  -webkit-mask:var(--m) no-repeat 0 0/100% 100%;mask:var(--m) no-repeat 0 0/100% 100%;
+  transition:background-color var(--fade) ease;pointer-events:none}
+.sel{position:absolute;inset:0;user-select:text;-webkit-user-select:text}
+.sel .ln{position:absolute;left:var(--x);top:var(--y);height:var(--lh);
+  font:700 calc(var(--lh) * .98)/var(--lh) Georgia,"Times New Roman",serif;
+  white-space:nowrap;color:transparent;transform-origin:0 50%;transform:scaleX(var(--sx,1))}
+.sel .ln.caps{font-size:calc(var(--lh) * 1.42)}
+a.hd{cursor:pointer}
+.hd:hover .glyph,.hd:focus-visible .glyph{background:var(--red)}
+.hd:focus-visible{outline:none}
+
+/* ── 고정 머리 영역 ── */
+.masthead{position:relative;height:457px;z-index:5}
+.hd-abs{position:absolute;margin:0}
+.hd-motto{left:170px;top:139px}
+.hd-masthead{left:548px;top:116px}     /* 가운데 정렬 (PSD 551 → 548) */
+.hd-edition{left:1556px;top:126px}
+.hd-weather{left:1549px;top:157px}
+.hd-temps{left:1528px;top:191px}
+.hd-headline{left:75px;top:314px}      /* 가운데 정렬 (PSD 72 → 75) */
+.box{position:absolute;top:113px;width:404px;height:104px;border:2px solid var(--line)}
+.box-left{left:58px}
+.box-right{left:1457px;top:112px}
+hr{margin:0;border:0}
+.dbl-full{position:absolute;left:0;width:1920px;height:10px;border-top:2px solid var(--line);border-bottom:2px solid var(--line)}
+.hline{position:absolute;left:0;width:1920px;height:2px;background:var(--line)}
+
+/* ── 음악 재생 바 (y 249–280 사이) ── */
+.player{position:absolute;left:var(--margin);right:var(--margin);top:249px;height:31px;display:flex;align-items:center;gap:14px;
+  font:700 13px/1 var(--mono);color:var(--ink);letter-spacing:.06em;user-select:none}
+.pl-btn{all:unset;flex:none;width:21px;height:21px;display:grid;place-items:center;cursor:pointer;color:var(--ink);transition:color var(--fade)}
+.pl-btn svg{width:13px;height:13px;fill:currentColor}
+.pl-mute svg{width:15px}
+.pl-btn:hover,.pl-btn:focus-visible{color:var(--red)}
+.pl-btn .i-pause,.player.playing .i-play{display:none}
+.player.playing .i-pause{display:block}
+.pl-mute .i-muted,.player.muted .i-vol{display:none}
+.player.muted .i-muted{display:block}
+.pl-label{flex:none;opacity:.75}
+.pl-title{flex:0 1 auto;max-width:620px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+.pl-track{position:relative;flex:1 1 auto;height:15px;cursor:pointer;outline:none}
+.pl-track::before{content:"";position:absolute;left:0;right:0;top:7px;height:1px;background:var(--line)}
+.pl-fill{position:absolute;left:0;top:6px;height:3px;width:0;background:var(--ink);transition:background-color var(--fade)}
+.pl-knob{position:absolute;top:3px;left:0;width:9px;height:9px;margin-left:-4px;border-radius:50%;background:var(--ink);transition:background-color var(--fade)}
+.pl-track:hover .pl-fill,.pl-track:hover .pl-knob,.pl-track:focus-visible .pl-fill,.pl-track:focus-visible .pl-knob{background:var(--red)}
+.pl-time{flex:none;font-variant-numeric:tabular-nums;opacity:.85}
+.player.empty .pl-track,.player.empty .pl-time{opacity:.35}
+#ytHolder{position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
+
+/* ── 스크롤 영역: 3면 → 4면 ── */
+.pages{position:absolute;top:457px;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;
+  scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;outline:none}
+.pages::-webkit-scrollbar{display:none}
+.page{position:relative;display:flex;min-height:100%;padding:0 var(--margin) 30px;scroll-snap-align:start;scroll-snap-stop:always}
+.col{position:relative;flex:none;width:var(--colw);padding:0 var(--pad)}
+.col.span2{width:calc(var(--colw) * 2)}
+.col + .col::before{content:"";position:absolute;left:-1px;top:7px;bottom:-30px;width:2px;background:var(--line)}
+.sub{display:flex;margin:0 calc(-1 * var(--pad))}
+.subcol{flex:none;width:var(--colw);padding:0 var(--pad)}
+
+/* 짧은 구분선 / 이중선 */
+.rule{display:block;width:var(--rw);height:2px;margin:var(--mt,0) auto 0;background:var(--line)}
+.dbl{display:block;height:12px;margin:var(--mt,0) calc(-1 * var(--pad) - 1px) 0;border-top:4px solid var(--line);border-bottom:2px solid var(--line)}
+
+/* 본문: 단어 단위 줄바꿈 + 양쪽 정렬, 마지막 줄 왼쪽 */
+.txt{display:block;margin-top:var(--mt,0);color:var(--ink);text-decoration:none;
+  font:400 14px/11.2px var(--mono);letter-spacing:0;
+  text-align:justify;text-align-last:left;text-justify:inter-word;
+  word-break:normal;overflow-wrap:normal;hyphens:manual;
+  transition:color var(--fade) ease;-webkit-text-stroke:.25px currentColor}
+.txt p{margin:0}
+.txt p + p{margin-top:11.2px}
+.txt:hover{color:var(--red)}
+a.txt{cursor:pointer}
+
+@media (prefers-reduced-motion:reduce){:root{--fade:0s}.pages{scroll-behavior:auto}}

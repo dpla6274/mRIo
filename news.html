@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#e3d0c1">
+  <title>The New Yotk Times. — MARIA PARK × VITTORIO</title>
+  <!-- 본문 Courier New가 없는 기기(안드로이드 등)를 위한 대체 글꼴 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="news.css?v=1">
+  <script src="news.js?v=1" defer></script>
+</head>
+<body>
+<!-- 인쇄 질감 필터: 글자 가장자리 번짐 + 잉크 빠짐 -->
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <filter id="ink" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n1"/>
+    <feDisplacementMap in="SourceGraphic" in2="n1" scale="1.2" xChannelSelector="R" yChannelSelector="G" result="rough"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.22" numOctaves="3" seed="19" result="n2"/>
+    <feColorMatrix in="n2" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.5 1.62" result="holes"/>
+    <feComposite in="rough" in2="holes" operator="in" result="worn"/>
+    <feGaussianBlur in="worn" stdDeviation="0.25"/>
+  </filter>
+</svg>
+
+<div class="stage" id="stage">
+
+  <!-- ───── 고정 영역 (3·4면 공통) ───── -->
+  <header class="masthead ink">
+    <div class="box box-left"></div>
+    <div class="hd hd-abs hd-motto" style="--w:181px;--h:51px"><i class="glyph" style="--m:url(assets/news/motto.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:181px;--lh:21px">"All the News That's</span><span class="ln" style="--x:35px;--y:29px;--lw:110px;--lh:22px">Fit to Print."</span></span></div>
+    <div class="hd hd-abs hd-masthead" style="--w:824px;--h:107px"><i class="glyph" style="--m:url(assets/news/masthead.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:824px;--lh:107px">The New Yotk Times.</span></span></div>
+    <div class="box box-right"></div>
+    <div class="hd hd-abs hd-edition" style="--w:207px;--h:25px"><i class="glyph" style="--m:url(assets/news/edition.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:207px;--lh:25px">LATE CITY EDITION</span></span></div>
+    <div class="hd hd-abs hd-weather" style="--w:221px;--h:29px"><i class="glyph" style="--m:url(assets/news/weather.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:221px;--lh:14px">Fair and cooler today. Tomorrow</span><span class="ln" style="--x:0px;--y:14px;--lw:221px;--lh:15px">fair and continued cool.</span></span></div>
+    <div class="hd hd-abs hd-temps" style="--w:264px;--h:15px"><i class="glyph" style="--m:url(assets/news/temps.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:264px;--lh:15px">Temperatures Yesterday - Max, 72; Min, 64</span></span></div>
+
+    <hr class="dbl-full" style="top:239px">
+    <!-- 음악 재생 바: 두 개의 가로 이중선 사이 -->
+    <div class="player" id="player" aria-label="Music player">
+      <button class="pl-btn" id="plPlay" type="button" aria-label="Play">
+        <svg viewBox="0 0 12 12" class="i-play"><path d="M2.5 1.5v9l8-4.5z"/></svg>
+        <svg viewBox="0 0 12 12" class="i-pause"><path d="M2.5 1.5h2.6v9H2.5zM6.9 1.5h2.6v9H6.9z"/></svg>
+      </button>
+      <span class="pl-label">NOW PLAYING —</span>
+      <span class="pl-title" id="plTitle">NO RECORD ON THE GRAMOPHONE</span>
+      <div class="pl-track" id="plTrack" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+        <div class="pl-fill" id="plFill"></div><div class="pl-knob" id="plKnob"></div>
+      </div>
+      <span class="pl-time" id="plTime">0:00 / 0:00</span>
+      <button class="pl-btn pl-next" id="plNext" type="button" aria-label="Next track" hidden>
+        <svg viewBox="0 0 12 12"><path d="M1.5 1.5v9l6-4.5zM8 1.5h2.4v9H8z"/></svg>
+      </button>
+      <button class="pl-btn pl-mute" id="plMute" type="button" aria-label="Mute">
+        <svg viewBox="0 0 14 12" class="i-vol"><path d="M1 4h2.6L7 1v10L3.6 8H1z"/><path d="M9 3.2q2 2.8 0 5.6M10.8 1.6q3.2 4.4 0 8.8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        <svg viewBox="0 0 14 12" class="i-muted"><path d="M1 4h2.6L7 1v10L3.6 8H1z"/><path d="M9 3.5l4 5M13 3.5l-4 5" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+    <hr class="dbl-full" style="top:280px">
+
+    <div class="hd hd-abs hd-headline" style="--w:1770px;--h:127px"><i class="glyph" style="--m:url(assets/news/headline.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:1770px;--lh:57px">GUN BATTLE ERUPTS AT SALVATORE MANSION ON UPPER EAST SIDE; GIANCARLO</span><span class="ln caps" style="--x:62px;--y:70px;--lw:1656px;--lh:57px">SALVATORE MISSING, SILVIO REPORTEDLY ASSUMES TEMPORARY CONTROL</span></span></div>
+    <hr class="hline" style="top:455px">
+  </header>
+
+  <!-- ───── 스크롤 영역: 3면 → 4면 ───── -->
+  <main class="pages" id="pages" tabindex="-1">
+<section class="page ink" id="page-3" data-page="3" aria-label="Page 3">
+<div class="col"><a class="hd" href="https://dpla.tistory.com/2" target="_blank" rel="noopener" style="--mt:24px;--w:248px;--h:83px"><i class="glyph" style="--m:url(assets/news/p3-know.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:248px;--lh:37px">I KNOW. I WASN'T</span><span class="ln caps" style="--x:6px;--y:46px;--lw:235px;--lh:37px">SERIOUS EITHER.</span></span></a>
+<hr class="rule" style="--mt:17px;--rw:158px">
+<div class="txt" style="--mt:15px"><p>Sept. 22 — Vittorio counted the remaining time beneath the morning rain. "Hundred days." Across the hall, Maria was still asleep. He checked that she was breathing, then began writing. [Good morning. It's past eight.] [Signor Giancarlo is waiting in the dining hall. He's already had two cups of coffee.] [If you don't get up, I'll have to carry you down. I'd rather not explain that to him.] "... Great idea." "... You don't need to. It was a joke, you know?" [I know. I wasn't serious either.] He folded the last note and slipped it into his pocket with the others.</p></div>
+<hr class="rule" style="--mt:26px;--rw:261px">
+<a class="hd" href="https://dpla.tistory.com/3" target="_blank" rel="noopener" style="--mt:16px;--w:230px;--h:24px"><i class="glyph" style="--m:url(assets/news/p3-tie.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:230px;--lh:24px">The tie was strategic</span></span></a>
+<hr class="rule" style="--mt:8px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>"How can you protect me from the rats? You cannot even tie a necktie properly." [The tie was strategic. Rats let their guard down around a man who can't dress himself properly.] [If you need anything, ring the bell. I'll be across the hall.]</p></div></div>
+<div class="col"><a class="hd" href="https://dpla.tistory.com/4" target="_blank" rel="noopener" style="--mt:25px;--w:247px;--h:59px"><i class="glyph" style="--m:url(assets/news/p3-thinking.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:247px;--lh:28px">What are you thinking</span><span class="ln" style="--x:19px;--y:32px;--lw:215px;--lh:27px">about, Miss Maria?</span></span></a>
+<hr class="dbl" style="--mt:14px">
+<a class="hd" href="https://dpla.tistory.com/6" target="_blank" rel="noopener" style="--mt:19px;--w:274px;--h:45px"><i class="glyph" style="--m:url(assets/news/p3-yesno.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:274px;--lh:45px">YES OR NO. (´-`)♡</span></span></a>
+<hr class="rule" style="--mt:10px;--rw:158px">
+<div class="txt" style="--mt:15px"><p>Oct. 3 — [We canstay a little longer if you wish. The garden is quiet today.] "That's true, I like here." "You want one? Ah." "You don't need to write. Just yes or no." Vittorio closed the notebook and simply shook his head—the first answer he had given her without writing. Later, unseen, he wrote on the last page: “Yes or No.” (´-\`)♡</p></div>
+<hr class="rule" style="--mt:12px;--rw:105px">
+<a class="txt" href="https://dpla.tistory.com/8" target="_blank" rel="noopener" style="--mt:12px"><p>"You know, just like how I told you, writing everything seems like... too much work. I don't know if that's because I am the 'speaker'. For the simple answers, just... this- or this."</p></a>
+<hr class="rule" style="--mt:17px;--rw:261px">
+<a class="hd" href="https://dpla.tistory.com/10" target="_blank" rel="noopener" style="--mt:18px;--w:202px;--h:60px"><i class="glyph" style="--m:url(assets/news/p3-black.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:202px;--lh:28px">Black. Skinny. Ate</span><span class="ln" style="--x:2px;--y:32px;--lw:196px;--lh:28px">everything I gave.</span></span></a></div>
+<div class="col"><a class="hd" href="https://dpla.tistory.com/13" target="_blank" rel="noopener" style="--mt:24px;--w:180px;--h:83px"><i class="glyph" style="--m:url(assets/news/p3-jazz.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:180px;--lh:37px">DO YOU LIKE</span><span class="ln caps" style="--x:48px;--y:46px;--lw:83px;--lh:37px">JAZZ?</span></span></a>
+<hr class="rule" style="--mt:17px;--rw:159px">
+<div class="txt" style="--mt:15px"><p>Oct. 12 — Maria’s practice softened into quiet jazz behind the closed door. "Do you like jazz?" Vittorio answered soundlessly, "Yes." Later, he slipped a note beneath her door. [I happen to like jazz very much. Especially when it’s played with such honesty.] Her reply came by violin: “Sophisticated Lady,” the same tune he had played in the car a week before. Vittorio sank against the hallway wall, understanding. That night, he tore up Silvio’s warning and made his choice: he would protect her, even from Silvio himself.</p></div>
+<hr class="rule" style="--mt:29px;--rw:105px">
+<a class="hd" href="https://dpla.tistory.com/14" target="_blank" rel="noopener" style="--mt:18px;--w:80px;--h:23px"><i class="glyph" style="--m:url(assets/news/p3-masha.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:80px;--lh:23px">Masha.</span></span></a>
+<hr class="rule" style="--mt:18px;--rw:261px">
+<a class="hd" href="https://dpla.tistory.com/15" target="_blank" rel="noopener" style="--mt:11px;--w:194px;--h:41px"><i class="glyph" style="--m:url(assets/news/p3-america.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:194px;--lh:22px">We're in America,</span><span class="ln" style="--x:54px;--y:28px;--lw:85px;--lh:13px">my man.</span></span></a>
+<hr class="rule" style="--mt:13px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>"...Oh, Vittorio. I cannot say that no one stops your love, but... We're in America, my man." [Then I will live as your man. From this moment on, my life is yours. Entirely.] 'Thank you... for letting me live.'</p></div></div>
+<div class="col"><a class="hd" href="https://dpla.tistory.com/18" target="_blank" rel="noopener" style="--mt:25px;--w:238px;--h:41px"><i class="glyph" style="--m:url(assets/news/p3-old.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:238px;--lh:20px">We will be very old,</span><span class="ln" style="--x:0px;--y:20px;--lw:238px;--lh:21px">we will be very merry.</span></span></a>
+<hr class="rule" style="--mt:13px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>Oct. 14 - [I've read this story before. About a woman who sells her beautiful hair to buy a gift for her husband. If it were me, I wouldn't have let you sell your hair. I would have sold my everything first.] [Thank you for choosing this book for me. It feels like you've seen the real me, the one hidden behind everything else.] "I won't let you sell your everything, never. We will be very old, we will be very merry." 'Very old. I promise.'</p></div>
+<hr class="dbl" style="--mt:27px">
+<a class="hd" href="https://dpla.tistory.com/20" target="_blank" rel="noopener" style="--mt:20px;--w:257px;--h:83px"><i class="glyph" style="--m:url(assets/news/p3-bday.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:257px;--lh:43px">HAPPY BIRTHDAY,</span><span class="ln caps" style="--x:74px;--y:46px;--lw:109px;--lh:37px">MASHA.</span></span></a>
+<hr class="rule" style="--mt:17px;--rw:159px">
+<div class="txt" style="--mt:15px"><p>Oct. 15 — At 11:30, Vittorio found he had nothing suitable to give Maria, so he filled a new notebook with memories from their day. On the last page he wrote, 'Happy Birthday, Masha.' Beneath it: (ᵔᴗᵔ) and a rose. At the bottom: [I stayed up making this, and every second felt like it was already yours.].]</p></div></div>
+<div class="col"><a class="hd" href="https://dpla.tistory.com/22" target="_blank" rel="noopener" style="--mt:25px;--w:206px;--h:55px"><i class="glyph" style="--m:url(assets/news/p3-fair.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:11px;--y:0px;--lw:186px;--lh:23px">I don't think 'fair'</span><span class="ln" style="--x:0px;--y:32px;--lw:206px;--lh:23px">exists between us.</span></span></a>
+<hr class="dbl" style="--mt:18px">
+<a class="hd" href="https://dpla.tistory.com/26" target="_blank" rel="noopener" style="--mt:13px;--w:286px;--h:90px"><i class="glyph" style="--m:url(assets/news/p3-canele.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:39px;--y:0px;--lw:208px;--lh:44px">CANELÉ ON 72nd</span><span class="ln caps" style="--x:0px;--y:53px;--lw:286px;--lh:37px">STREET EVERY FRIDAY</span></span></a>
+<hr class="rule" style="--mt:12px;--rw:158px">
+<div class="txt" style="--mt:14px"><p>Nov. 15 - [I brought canelé today. The bakery on 72nd Street bakes them on Fridays only.] "Alright, then." Maria left her hand resting in Vittorio’s, and neither withdrew it."I love Friday from now on." He wrote one-handed: [Then I will buy every canelé on 72ndStreet every Friday until they run out of sugar.] Their fingers loosely intertwined. Looking toward the gray November sky, Vittorio counted what remained. "Six more Fridays."</p></div>
+<hr class="rule" style="--mt:10px;--rw:105px">
+<a class="hd" href="https://dpla.tistory.com/28" target="_blank" rel="noopener" style="--mt:13px;--w:78px;--h:24px"><i class="glyph" style="--m:url(assets/news/p3-always.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:78px;--lh:24px">Always.</span></span></a>
+<hr class="rule" style="--mt:8px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>"Always. promise?" [Always. I promise you every Friday, every canelé, every cup of flat white. I promise you my heart beat under your ear. I promise you everything I am allowed to promise.] [And when I cannot keep my promise, forgive the silence.]</p></div></div>
+<div class="col"><a class="hd" href="https://dpla.tistory.com/29" target="_blank" rel="noopener" style="--mt:25px;--w:155px;--h:27px"><i class="glyph" style="--m:url(assets/news/p3-sayit.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:155px;--lh:27px">We can say it.</span></span></a>
+<hr class="rule" style="--mt:14px;--rw:158px">
+<a class="hd" href="https://dpla.tistory.com/37" target="_blank" rel="noopener" style="--mt:18px;--w:128px;--h:23px"><i class="glyph" style="--m:url(assets/news/p3-crash.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:128px;--lh:23px">Then crash.</span></span></a>
+<hr class="rule" style="--mt:17px;--rw:158px">
+<a class="hd" href="https://dpla.tistory.com/61" target="_blank" rel="noopener" style="--mt:16px;--w:171px;--h:24px"><i class="glyph" style="--m:url(assets/news/p3-orphan.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:171px;--lh:24px">I am an orphan.</span></span></a>
+<hr class="rule" style="--mt:9px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>Nov. 28 - Maria watched him eat before asking, "Your name." Then, more softly, "Vittorio." He knew what she meant. Vittorio was all he had—no father’s name, no family to leave him one. "Just, 'Vittorio'?" The question was innocent, but he lowered his eyes and, after a long silence, traced the answer into her palm. "Just... Vittorio." "...Oh." Maria came down beside him and touched his cheek.</p></div>
+<hr class="rule" style="--mt:13px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>"I'm... I'm sorry. I was..." Vittorio shook his head before she could finish and pressed his face briefly into her hand. At last he forced himself to meet her eyes. "I have... no family name." He paused, then added the harder truth. "I am an orphan." He rested his forehead against her hand, unable to look at her. Vittorio could not know that, only moments earlier, Maria had been thinking of the name “Maria Park.” Had he known, he might have gone straight to City Hall and demanded a surname of his own.</p></div></div>
+</section>
+<section class="page ink" id="page-4" data-page="4" aria-label="Page 4">
+<div class="col"><a class="hd" href="https://dpla.tistory.com/62" target="_blank" rel="noopener" style="--mt:24px;--w:177px;--h:37px"><i class="glyph" style="--m:url(assets/news/p4-dont.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:177px;--lh:37px">THEN DON'T.</span></span></a>
+<hr class="rule" style="--mt:17px;--rw:158px">
+<div class="txt" style="--mt:15px"><p>Dec. 6 - Before leaving, Vittorio slipped a note beneath Maria’s door: [I'll be back before dawn. Lock your door.] He drew two cats beneath it. At the docks, Lorenzo confirmed the trap and offered seventeen minutes to make Silvio’s heroin disappear. [What do you want for the seventeen minutes.] "Nothing tonight. Consider it an investment." Later, back at the house, Maria met him barefoot with the note still in her hand. "You know..." "You asked me what I was thinking last week. It was..." "I think I can't live without you. I mean it, not just kind of a... phrase." Vittorio lifted her chin and answered with his lips. "Then don't." "Live with me."</p></div>
+<hr class="rule" style="--mt:17px;--rw:158px">
+<a class="hd" href="https://dpla.tistory.com/65" target="_blank" rel="noopener" style="--mt:12px;--w:199px;--h:60px"><i class="glyph" style="--m:url(assets/news/p4-dignified.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:199px;--lh:23px">That's much more</span><span class="ln" style="--x:48px;--y:32px;--lw:103px;--lh:28px">dignified.</span></span></a>
+<hr class="rule" style="--mt:12px;--rw:158px">
+<a class="hd" href="https://dpla.tistory.com/66" target="_blank" rel="noopener" style="--mt:12px;--w:166px;--h:27px"><i class="glyph" style="--m:url(assets/news/p4-before.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:166px;--lh:27px">I didn't, before.</span></span></a>
+<hr class="rule" style="--mt:14px;--rw:158px">
+<a class="hd" href="https://dpla.tistory.com/69" target="_blank" rel="noopener" style="--mt:12px;--w:289px;--h:90px"><i class="glyph" style="--m:url(assets/news/p4-point.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:289px;--lh:22px">I just don't see the point</span><span class="ln" style="--x:0px;--y:22px;--lw:289px;--lh:23px">in tying it properly</span><span class="ln" style="--x:0px;--y:45px;--lw:289px;--lh:23px">when you're going to fix it</span><span class="ln" style="--x:0px;--y:68px;--lw:289px;--lh:22px">anyway.</span></span></a></div>
+<div class="col"><a class="hd" href="https://dpla.tistory.com/70" target="_blank" rel="noopener" style="--mt:18px;--w:94px;--h:24px"><i class="glyph" style="--m:url(assets/news/p4-itsyou.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:94px;--lh:24px">It's you.</span></span></a>
+<hr class="rule" style="--mt:8px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>Dec. 25 - On Christmas evening, Vittorio arrived at Maria’s room fifteen minutes early with a plain brown parcel. [Merry Christmas. The dinner downstairs starts at eight. I came up fifteen minutes early. ...No particular reason.] Inside were gloves, two canelés and a small walnut cat he had carved himself. [I know I said no gifts. That rule was for you, not for me. The gloves were for the cold, and the cat was because I had spare wood. The canelés... I bought them because the shop was open today.]</p></div>
+<hr class="rule" style="--mt:11px;--rw:105px">
+<div class="txt" style="--mt:11px"><p>Maria set the cat beside the wooden violin he had made before. "I know you had a cat when you were young, but it seems like it's not just because you like cats." Vittorio hesitated, then answered with his lips. "It's you." "The shop was open today, okay." He wrote again: [You weren't supposed to figure that out. The cat was supposed to just be a cat. You ruin all my excuses.]</p></div>
+<hr class="rule" style="--mt:16px;--rw:261px">
+<a class="hd" href="https://dpla.tistory.com/71" target="_blank" rel="noopener" style="--mt:16px;--w:176px;--h:24px"><i class="glyph" style="--m:url(assets/news/p4-voice.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:176px;--lh:24px">This is my voice.</span></span></a>
+<hr class="rule" style="--mt:9px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>"A gift for you." [I wrote it down three times. In ink. You read all three.] [This is my voice. You bought me a voice for Christmas.] "...That's too sweet thing to say." "Two more holidays left, my love."</p></div></div>
+<div class="col"><a class="hd" href="https://dpla.tistory.com/73" target="_blank" rel="noopener" style="--mt:23px;--w:259px;--h:83px"><i class="glyph" style="--m:url(assets/news/p4-newyear.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:259px;--lh:43px">HAPPY NEW YEAR,</span><span class="ln caps" style="--x:6px;--y:46px;--lw:247px;--lh:37px">MY MUTE FRIEND.</span></span></a>
+<hr class="rule" style="--mt:17px;--rw:159px">
+<div class="txt" style="--mt:15px"><p>Jan. 1 — Gunfire drove Vittorio and Maria through the garden and into the waiting Mercury, where Lorenzo de Monteluce stood beside a black Packard as calmly as though nothing were happening. "Happy New Year, my mute friend. Look at you, stealing the brightest jewel from the Salvatore vault. Don't waste your bullets on me. If I wanted to stop you, my boys would have blocked this alley ten minutes ago." He had even put chains on the Mercury’s tires. "I'm not here to collect, Miss Maria. Not tonight." Lorenzo warned that Silvio would search every alley in Manhattan by sunrise and suggested Catskill. "Consider it a New Year's gift. No strings. A man ought to have at least one clean debt in his life, don't you think?"</p></div>
+<hr class="rule" style="--mt:10px;--rw:105px">
+<div class="txt" style="--mt:9px"><p>"Go on, my mute friend. The midnight bells have already finished ringing. Oh, and if you ever get tired of running through the snow... Queens is always warmer than Manhattan. Remember that." [Forget Lorenzo. His ledger is my problem, not yours. We're not going to Catskill. Too obvious. I have a place near the river where no one knows my name.] Then he wrapped one hand around her frozen ankle as Manhattan disappeared behind them.</p></div></div>
+<div class="col"><a class="hd" href="https://dpla.tistory.com/74" target="_blank" rel="noopener" style="--mt:18px;--w:271px;--h:41px"><i class="glyph" style="--m:url(assets/news/p4-die.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:271px;--lh:20px">I won't let you die. Even</span><span class="ln" style="--x:0px;--y:20px;--lw:271px;--lh:21px">if you hate me forever.</span></span></a>
+<hr class="rule" style="--mt:14px;--rw:105px">
+<div class="txt" style="--mt:12px"><p>"...Since when did you know about this?" [From the beginning.] [Silvio ordered me to watch you. Report everything. And on December 31st, if things went wrong, to kill you. That was my assignment the day I walked into your room.] 'I'm sorry.' [I will not ask you to forgive me. I have no right to ask that.] "...Do you even love me?" [Yes. That is the one thing in my life that was never a lie.] [The order was real. The reports were real. But every Friday, every canelé, every cat I drew, every time my hands shook when I touched you — that was real too.]</p></div>
+<hr class="rule" style="--mt:11px;--rw:105px">
+<div class="txt" style="--mt:11px"><p>[I was supposed to be a knife. I became something else. I don't know what to call it. But it kept me awake at night and it made December 31st the first thing I ever feared in my life.] [Hit me, Masha. Or curse me. Please don't just cry like that.] [We have to move. The safe house by the river is twenty minutes away. Once we get there, I will give you my gun. You can decide what to do with me then.] 'I won't let you die. Even if you hate me forever.'</p></div>
+<hr class="rule" style="--mt:17px;--rw:261px">
+<a class="hd" href="https://dpla.tistory.com/75" target="_blank" rel="noopener" style="--mt:8px;--w:105px;--h:28px"><i class="glyph" style="--m:url(assets/news/p4-31.png)" aria-hidden="true"></i><span class="sel"><span class="ln" style="--x:0px;--y:0px;--lw:105px;--lh:28px">Happy 31</span></span></a>
+<hr class="rule" style="--mt:13px;--rw:261px"></div>
+<div class="col span2"><a class="hd" href="https://dpla.tistory.com/77" target="_blank" rel="noopener" style="--mt:24px;--w:46px;--h:37px"><i class="glyph" style="--m:url(assets/news/p4-fin.png)" aria-hidden="true"></i><span class="sel"><span class="ln caps" style="--x:0px;--y:0px;--lw:46px;--lh:37px">FIN</span></span></a>
+<hr class="rule" style="--mt:17px;--rw:158px"><div class="sub"><div class="subcol"><div class="txt" style="--mt:17px"><p>[We need to move. Now. North, then west. There's a train line past the river. We can lose them in the mountains.] "Let's go, then. I'll do whatever you tell me to do." Maria’s voice was low and calm, but the resolve within it was harder than the winter air filling the cabin. Vittorio stopped the pen moving across the map and slowly raised his head. Her eyes were narrowed, though not from distrust or suspicion. It was the look of someone desperately gathering herself before the single urgent purpose of survival. She would do whatever he told her. The words were both a shackle and a salvation. The life resting upon his shoulders had become too heavy to measure, yet at the same time it gave absolute purpose to everything he did.</p><p>Vittorio nodded once without a word. His violet eyes darkened. This was no time for sentiment. Her trust had to be justified through action. He rose and picked up the black coat that had been tossed carelessly across the bed. It was the same coat he had covered her with the night before, still faintly carrying her warmth and scent. He placed it around Maria’s shoulders. The heavy wool looked absurd over her ivory silk dress, but they had long since lost the luxury of caring whether anything looked proper.</p></div></div><div class="subcol"><div class="txt" style="--mt:17px"><p>On January 14, they moved again. A single stone from the sapphire necklace was all they had left. Vittorio sewed it deep into the lining of his trousers and waited until Maria’s feet had healed enough to travel. They disembarked at Albany, took a bus, then walked again. West. West, and then north.They abandoned names, erased tracks and changed clothes. Even after the neon of New York disappeared beyond the horizon, Vittorio continued to glance behind them every few days. Nothing followed except their long shadows.</p><p>They reached a mountain village in Vermont in the middle of February. Snow stood waist-deep in places, and the town held perhaps three hundred people. There was one post office, one general store, one church, and at the edge of the village, backed against the woods, one shabby wooden house. Vittorio sold the final sapphire fragment and paid six months’ rent. The jewels Giancarlo had once placed around Maria’s neck had, in the end, purchased Maria’s survival. Vittorio found work at a sawmill outside the village. Word soon spread that the enormous new laborer could not speak, but his size and silent diligence pleased the mill owner. Maria began teaching violin to children at the village church.</p></div></div></div></div>
+</section>
+  </main>
+
+  <div class="grain" aria-hidden="true"></div>
+  <div class="specks" aria-hidden="true"></div>
+</div>
+<div id="ytHolder" aria-hidden="true"></div>
+</body>
+</html>
