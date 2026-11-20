@@ -1,8 +1,8 @@
 /* 네 가지 링크만 바꾸면 됩니다. 주소가 빈 문자열이면 클릭해도 이동하지 않습니다. */
 const LINKS={
   mariaName:'',
-  vittorioName:'',
-  mariaImage:'',
+  vittorioName:'https://caveduck.io/ko/share/characters/4dd9205a-b982-496f-9597-72c5ddfc8b49?rc=1qQMZ53X9o&_share_hash=',
+  mariaImage:'https://youtube.com/playlist?list=PLPOv65CdoMiw&si=R1mKH4y3lfv6whMW',
   vittorioImage:'news.html'   // 비토리오 그림 클릭 → 신문 3·4면
 };
 
