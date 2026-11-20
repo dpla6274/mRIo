@@ -18,19 +18,48 @@ const MUSIC = {
 
 /* ── 화면 맞춤: 1920px 폭 기준을 창 폭에 맞게 확대/축소 ── */
 const stage = document.getElementById('stage');
-/* 1080 디자인 중 맨 위 87px(주소창 자리)는 원래 안 보이도록 설계됨.
-   창 폭에 맞춰 배율을 정하고, 높이가 모자라면 위쪽을 잘라 아래쪽은 끝까지 보이게 한다. */
-const ADDRESS_BAR = 87, DESIGN_H = 1080;
+/* ── 화면 맞춤 (반응형) ──────────────────────────────
+   1) 창 폭에 맞춰 배율(z)을 정함
+   2) 머리 영역 + 가장 긴 단이 창 높이 안에 모두 들어가도록 세로 간격 배율(--gs)을 줄임
+      (작업 표시줄·주소창 높이와 상관없이 실제 보이는 창 높이 기준 → 내부 스크롤 없음)
+   3) 간격을 MIN_GAP까지 줄여도 모자라면 전체를 축소 (좌우에 종이 여백이 생김)
+   4) 여유가 있으면 PSD 간격 그대로, 남는 높이는 맨 위 87px(주소창 자리)부터 채움 */
+const ADDRESS_BAR = 87, MIN_GAP = 0.3;
+let colMetrics = null;
+function measureColumns(){
+  const st = stage.style, prev = [st.getPropertyValue('--z'), st.getPropertyValue('--gs')];
+  st.setProperty('--z', 1);
+  const res = [];
+  const cols = [...document.querySelectorAll('.page .col')];
+  const bottomOf = c => { const last = c.lastElementChild; return last ? last.offsetTop + last.offsetHeight : 0; };
+  st.setProperty('--gs', 0); const f = cols.map(bottomOf);
+  st.setProperty('--gs', 1); const g = cols.map(bottomOf);
+  cols.forEach((c, i) => res.push({F: f[i], G: g[i] - f[i]}));
+  st.setProperty('--z', prev[0] || 1); st.setProperty('--gs', prev[1] || 1);
+  return res;
+}
+// 머리 영역 높이(위 87px 제외) = 284 + 86·gs, 아래 여백 = 8 + 20·gs
+const need = gs => 284 + 86 * gs + 8 + 20 * gs + Math.max(...colMetrics.map(c => c.F + c.G * gs));
 function fit(){
-  const z = window.innerWidth / 1920;
-  const h = window.innerHeight / z;                 // 화면에 보이는 높이(디자인 px)
+  if (!colMetrics) colMetrics = measureColumns();
+  const W = window.innerWidth, Hpx = window.innerHeight;
+  let z = W / 1920, H = Hpx / z, gs = 1, top = 0;
+  if (need(1) <= H){
+    top = Math.min(ADDRESS_BAR, H - need(1));
+  } else {
+    gs = Math.min(...colMetrics.map(c => (H - 292 - c.F) / (c.G + 106)));
+    if (gs < MIN_GAP){ gs = MIN_GAP; z = Hpx / need(MIN_GAP); H = Hpx / z; }
+  }
   stage.style.setProperty('--z', z);
-  stage.style.height = h + 'px';
-  stage.style.setProperty('--shift', Math.max(0, DESIGN_H - h) + 'px');
+  stage.style.setProperty('--gs', gs.toFixed(4));
+  stage.style.setProperty('--top', top.toFixed(2) + 'px');
+  stage.style.height = H + 'px';
 }
 fit();
 window.addEventListener('resize', fit, {passive:true});
 if (window.visualViewport) visualViewport.addEventListener('resize', fit, {passive:true});
+// 글꼴이 늦게 들어오면 본문 줄 수가 바뀌므로 다시 측정
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { colMetrics = null; fit(); });
 
 /* ── 제목 위 투명 텍스트를 PSD 글자 폭에 맞춤 (드래그 범위가 글자와 일치하도록) ── */
 function fitSelectableText(){

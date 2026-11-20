@@ -16,13 +16,25 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--paper)}
+body{display:flex;justify-content:center;background:url(assets/news/paper-grain.png) var(--paper);background-size:512px;background-blend-mode:multiply}
 .defs{position:absolute;width:0;height:0}
 ::selection{background:rgba(122,18,20,.24);color:inherit}
 
-.stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--paper);zoom:var(--z,1)}
+.stage{position:relative;flex:none;width:1920px;height:1080px;overflow:hidden;background:var(--paper);zoom:var(--z,1);
+  /* ── 세로 배치 ──
+     --gs  : 개체 사이 세로 간격 배율 (1 = PSD 그대로). 창이 낮으면 news.js가 줄임
+     --top : PSD 맨 위 87px(주소창 자리) 중 실제로 보여줄 높이 */
+  --gs:1;--top:87px;
+  --A:calc(var(--top) + 26px * var(--gs));
+  --r1:calc(var(--A) + 104px + 22px * var(--gs));
+  --r2:calc(var(--r1) + 41px);
+  --hl:calc(var(--r2) + 10px + 24px * var(--gs));
+  --hb:calc(var(--hl) + 127px + 14px * var(--gs));
+  --hdr:calc(var(--hb) + 2px);
+  --pb:calc(8px + 20px * var(--gs))}
 /* 디자인 위쪽 87px는 브라우저 주소창에 가려지는 영역.
    화면이 1080보다 짧으면 위쪽부터 잘라내고 아래쪽은 항상 끝까지 보이게 함 (--shift 는 news.js 가 계산) */
-.frame{position:absolute;left:0;right:0;top:calc(-1 * var(--shift,0px));bottom:0}
+.frame{position:absolute;inset:0}
 
 /* 인쇄 질감 */
 .ink{filter:url(#ink)}
@@ -32,7 +44,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--paper)}
 /* ── 공통: PSD 글리프 마스크 제목 ──
    .glyph : PSD에 있던 글자 모양 그대로(폰트 동일), 색만 CSS로 바뀜
    .sel   : 그 위에 겹친 투명 텍스트 → 드래그·복사 가능 */
-.hd{position:relative;display:block;width:var(--w);height:var(--h);margin:var(--mt,0) 0 0 calc((100% - var(--w)) / 2);color:inherit;text-decoration:none;flex:none}
+.hd{position:relative;display:block;width:var(--w);height:var(--h);margin:calc(var(--mt,0px) * var(--gs)) 0 0 calc((100% - var(--w)) / 2);color:inherit;text-decoration:none;flex:none}
 .glyph{position:absolute;inset:0;background:var(--ink);
   -webkit-mask:var(--m) no-repeat 0 0/100% 100%;mask:var(--m) no-repeat 0 0/100% 100%;
   transition:background-color var(--fade) ease;pointer-events:none}
@@ -46,23 +58,24 @@ a.hd:hover .glyph,a.hd:focus-visible .glyph{background:var(--red)}   /* 링크 �
 .hd:focus-visible{outline:none}
 
 /* ── 고정 머리 영역 ── */
-.masthead{position:relative;height:457px;z-index:5}
+.masthead{position:relative;height:var(--hdr);z-index:5}
 .hd-abs{position:absolute;margin:0}
-.hd-motto{left:170px;top:139px}
-.hd-masthead{left:545px;top:116px}     /* 가운데 정렬 */
-.hd-edition{left:1556px;top:126px}
-.hd-weather{left:1549px;top:157px}
-.hd-temps{left:1528px;top:191px}
-.hd-headline{left:75px;top:314px}      /* 가운데 정렬 (PSD 72 → 75) */
-.box{position:absolute;top:113px;width:404px;height:104px;border:2px solid var(--line)}
+.hd-motto{left:170px;top:calc(var(--A) + 26px)}
+.hd-masthead{left:545px;top:calc(var(--A) + 3px)}     /* 가운데 정렬 */
+.hd-edition{left:1556px;top:calc(var(--A) + 13px)}
+.hd-weather{left:1549px;top:calc(var(--A) + 44px)}
+.hd-temps{left:1528px;top:calc(var(--A) + 78px)}
+.hd-headline{left:75px;top:var(--hl)}      /* 가운데 정렬 (PSD 72 → 75) */
+.box{position:absolute;top:var(--A);width:404px;height:104px;border:2px solid var(--line)}
 .box-left{left:58px}
-.box-right{left:1457px;top:112px}
+.box-right{left:1457px;top:calc(var(--A) - 1px)}
 hr{margin:0;border:0}
+.r1{top:var(--r1)}.r2{top:var(--r2)}
 .dbl-full{position:absolute;left:0;width:1920px;height:10px;border-top:2px solid var(--line);border-bottom:2px solid var(--line)}
-.hline{position:absolute;left:0;width:1920px;height:2px;background:var(--line)}
+.hline{position:absolute;top:var(--hb);left:0;width:1920px;height:2px;background:var(--line)}
 
 /* ── 음악 재생 바 (y 249–280 사이) ── */
-.player{position:absolute;left:var(--margin);right:var(--margin);top:249px;height:31px;display:flex;align-items:center;gap:14px;
+.player{position:absolute;left:var(--margin);right:var(--margin);top:calc(var(--r1) + 10px);height:31px;display:flex;align-items:center;gap:14px;
   font:700 13px/1 var(--mono);color:var(--ink);letter-spacing:.06em;user-select:none}
 .pl-btn{all:unset;flex:none;width:21px;height:21px;display:grid;place-items:center;cursor:pointer;color:var(--ink);transition:color var(--fade)}
 .pl-btn svg{width:13px;height:13px;fill:currentColor}
@@ -84,22 +97,22 @@ hr{margin:0;border:0}
 #ytHolder{position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
 
 /* ── 스크롤 영역: 3면 → 4면 ── */
-.pages{position:absolute;top:457px;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;
+.pages{position:absolute;top:var(--hdr);left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;
   scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;outline:none}
 .pages::-webkit-scrollbar{display:none}
-.page{position:relative;display:flex;min-height:100%;padding:0 var(--margin) 30px;scroll-snap-align:start;scroll-snap-stop:always}
+.page{position:relative;display:flex;min-height:100%;padding:0 var(--margin) var(--pb);scroll-snap-align:start;scroll-snap-stop:always}
 .col{position:relative;flex:none;width:var(--colw);padding:0 var(--pad)}
 .col.span2{width:calc(var(--colw) * 2)}
-.col + .col::before{content:"";position:absolute;left:-1px;top:7px;bottom:-30px;width:2px;background:var(--line)}
+.col + .col::before{content:"";position:absolute;left:-1px;top:calc(7px * var(--gs));bottom:calc(-1 * var(--pb));width:2px;background:var(--line)}
 .sub{display:flex;margin:0 calc(-1 * var(--pad))}
 .subcol{flex:none;width:var(--colw);padding:0 var(--pad)}
 
 /* 짧은 구분선 / 이중선 */
-.rule{display:block;width:var(--rw);height:2px;margin:var(--mt,0) auto 0;background:var(--line)}
-.dbl{display:block;height:12px;margin:var(--mt,0) calc(-1 * var(--pad) - 1px) 0;border-top:4px solid var(--line);border-bottom:2px solid var(--line)}
+.rule{display:block;width:var(--rw);height:2px;margin:calc(var(--mt,0px) * var(--gs)) auto 0;background:var(--line)}
+.dbl{display:block;height:12px;margin:calc(var(--mt,0px) * var(--gs)) calc(-1 * var(--pad) - 1px) 0;border-top:4px solid var(--line);border-bottom:2px solid var(--line)}
 
 /* 본문: 단어 단위 줄바꿈 + 양쪽 정렬, 마지막 줄 왼쪽 */
-.txt{display:block;margin-top:var(--mt,0);color:var(--ink);text-decoration:none;
+.txt{display:block;margin-top:calc(var(--mt,0px) * var(--gs));color:var(--ink);text-decoration:none;
   font:400 14px/11.2px var(--mono);letter-spacing:0;
   text-align:justify;text-align-last:left;text-justify:inter-word;
   word-break:normal;overflow-wrap:normal;hyphens:manual;

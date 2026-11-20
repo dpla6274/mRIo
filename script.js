@@ -51,6 +51,12 @@ function fitScene(){
     sceneX=(w-SCENE_W*scale)/2;
     sceneY=-browserUI;
   }
+  // 화면 아래(작업 표시줄 등)에 가려지는 장면 높이만큼 비토리오 이름·연대기를 올림
+  const visibleBottom=(h-sceneY)/scale;
+  const lift=Math.max(0,Math.min(300,SCENE_H-visibleBottom));
+  scene.style.setProperty('--lift',lift+'px');
+  const nameRect=document.querySelector('[data-link="vittorioName"] rect');
+  if(nameRect)nameRect.setAttribute('y',948-lift);
   maxPanX=isMobile?Math.max(0,(SCENE_W*scale-w)/2):0;
   maxPanY=0;
   panX=Math.max(-maxPanX,Math.min(maxPanX,panX));

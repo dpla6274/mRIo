@@ -32,5 +32,11 @@ body{font-family:"Times New Roman",Tinos,Georgia,serif}
 .maria-copy{left:35px;top:226px;width:548px;height:290px;text-align:left}
 .vittorio-copy{left:1362px;top:692px;width:523px;height:248px;text-align:right}
 .vittorio-copy p{right:0}
+/* v11: 비토리오 이름·연대기를 작업 표시줄 높이(--lift)만큼 위로 */
+.title-clean-vittorio{clip-path:none!important;transition:none}
+.title-red-vittorio,.title-white-vittorio{top:calc(951px - var(--lift,0px))}
+.title-white-vittorio{left:1330px;width:555px;height:88px;z-index:5;clip-path:inset(0 0 0 0)}
+.scene[data-hover="vittorio-name"] .title-white-vittorio{clip-path:inset(0 100% 0 0)}
+.vittorio-copy{top:calc(692px - var(--lift,0px))}
 @media (max-width:700px) and (orientation:portrait){.viewport{touch-action:none}}
 @media (prefers-reduced-motion:reduce){.title-wipe,.hover-layer{transition:none!important}}
