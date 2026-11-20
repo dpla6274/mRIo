@@ -31,7 +31,7 @@ body{display:flex;justify-content:center;background:url(assets/news/paper-grain.
   --hl:calc(var(--r2) + 10px + 24px * var(--gs));
   --hb:calc(var(--hl) + 127px + 14px * var(--gs));
   --hdr:calc(var(--hb) + 2px);
-  --pb:calc(8px + 20px * var(--gs))}
+  --pad:18px}
 /* 디자인 위쪽 87px는 브라우저 주소창에 가려지는 영역.
    화면이 1080보다 짧으면 위쪽부터 잘라내고 아래쪽은 항상 끝까지 보이게 함 (--shift 는 news.js 가 계산) */
 .frame{position:absolute;inset:0}
@@ -44,7 +44,7 @@ body{display:flex;justify-content:center;background:url(assets/news/paper-grain.
 /* ── 공통: PSD 글리프 마스크 제목 ──
    .glyph : PSD에 있던 글자 모양 그대로(폰트 동일), 색만 CSS로 바뀜
    .sel   : 그 위에 겹친 투명 텍스트 → 드래그·복사 가능 */
-.hd{position:relative;display:block;width:var(--w);height:var(--h);margin:calc(var(--mt,0px) * var(--gs)) 0 0 calc((100% - var(--w)) / 2);color:inherit;text-decoration:none;flex:none}
+.hd{position:relative;display:block;width:var(--w);height:var(--h);margin:max(7px, calc(var(--mt,0px) * var(--cg,1))) 0 0 calc((100% - var(--w)) / 2);color:inherit;text-decoration:none;flex:none}
 .glyph{position:absolute;inset:0;background:var(--ink);
   -webkit-mask:var(--m) no-repeat 0 0/100% 100%;mask:var(--m) no-repeat 0 0/100% 100%;
   transition:background-color var(--fade) ease;pointer-events:none}
@@ -100,19 +100,20 @@ hr{margin:0;border:0}
 .pages{position:absolute;top:var(--hdr);left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;
   scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;outline:none}
 .pages::-webkit-scrollbar{display:none}
-.page{position:relative;display:flex;min-height:100%;padding:0 var(--margin) var(--pb);scroll-snap-align:start;scroll-snap-stop:always}
-.col{position:relative;flex:none;width:var(--colw);padding:0 var(--pad)}
+.page{position:relative;display:flex;min-height:100%;height:100%;overflow:hidden;padding:var(--pad) var(--margin);scroll-snap-align:start;scroll-snap-stop:always}
+.col{position:relative;flex:none;width:var(--colw);padding:0 21px}
 .col.span2{width:calc(var(--colw) * 2)}
-.col + .col::before{content:"";position:absolute;left:-1px;top:calc(7px * var(--gs));bottom:calc(-1 * var(--pb));width:2px;background:var(--line)}
-.sub{display:flex;margin:0 calc(-1 * var(--pad))}
-.subcol{flex:none;width:var(--colw);padding:0 var(--pad)}
+.col + .col::before{content:"";position:absolute;left:-1px;top:calc(7px - var(--pad));bottom:calc(-1 * var(--pad));width:2px;background:var(--line)}
+.sub{display:flex;margin:max(7px, calc(var(--mt,0px) * var(--cg,1))) -21px 0}
+.subcol{flex:none;width:var(--colw);padding:0 21px}
+.subcol > :first-child{margin-top:0}
 
 /* 짧은 구분선 / 이중선 */
-.rule{display:block;width:var(--rw);height:2px;margin:calc(var(--mt,0px) * var(--gs)) auto 0;background:var(--line)}
-.dbl{display:block;height:12px;margin:calc(var(--mt,0px) * var(--gs)) calc(-1 * var(--pad) - 1px) 0;border-top:4px solid var(--line);border-bottom:2px solid var(--line)}
+.rule{display:block;width:var(--rw);height:2px;margin:max(7px, calc(var(--mt,0px) * var(--cg,1))) auto 0;background:var(--line)}
+.dbl{display:block;height:12px;margin:max(7px, calc(var(--mt,0px) * var(--cg,1))) -22px 0;border-top:4px solid var(--line);border-bottom:2px solid var(--line)}
 
 /* 본문: 단어 단위 줄바꿈 + 양쪽 정렬, 마지막 줄 왼쪽 */
-.txt{display:block;margin-top:calc(var(--mt,0px) * var(--gs));color:var(--ink);text-decoration:none;
+.txt{display:block;margin-top:max(7px, calc(var(--mt,0px) * var(--cg,1)));color:var(--ink);text-decoration:none;
   font:400 14px/11.2px var(--mono);letter-spacing:0;
   text-align:justify;text-align-last:left;text-justify:inter-word;
   word-break:normal;overflow-wrap:normal;hyphens:manual;
@@ -123,3 +124,29 @@ a.txt:hover{color:var(--red)}   /* 링크 걸린 본문만 */
 a.txt{cursor:pointer}
 
 @media (prefers-reduced-motion:reduce){:root{--fade:0s}.pages{scroll-behavior:auto}}
+
+/* 단 첫 개체는 위 여백(--pad)에 바로 붙음 → 모든 단의 윗줄 정렬 */
+.col > .lead{margin-top:0!important}
+.ad-off{display:none!important}
+
+/* ── 1940년 신문 광고 ── */
+.ad{position:relative;margin-top:max(7px, calc(var(--mt,0px) * var(--cg,1)));margin-left:-6px;margin-right:-6px;border:2.5px solid var(--ink);color:var(--ink);overflow:hidden;user-select:none}
+.ad *{box-sizing:border-box}
+.ad .dbl-in{border:1px solid var(--ink);margin:3px}
+.c{text-align:center}
+.f-anton{font-family:Anton,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.01em}
+.f-black{font-family:"Archivo Black",sans-serif}
+.f-ser{font-family:"Old Standard TT","TeX Gyre Bonum",Georgia,serif}
+.f-scr{font-family:"Pinyon Script","TeX Gyre Chorus",cursive}
+.f-nar{font-family:"Archivo Narrow","Liberation Sans Narrow","Arial Narrow",sans-serif;font-weight:700}
+.rev{background:var(--ink);color:var(--paper);padding:2px 6px}
+.tiny{font-size:9px;letter-spacing:.18em;text-transform:uppercase}
+.list{display:grid;grid-template-columns:1fr auto;column-gap:4px;font:700 11px/1.35 "Archivo Narrow","Liberation Sans Narrow",sans-serif;text-transform:uppercase}
+.list span:nth-child(odd){display:flex;gap:3px;white-space:nowrap;overflow:hidden}
+.list span:nth-child(odd)::after{content:". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .";font-weight:400;opacity:.8;overflow:hidden}
+.ad svg{display:block;stroke:var(--ink);fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hatch line{stroke-width:.7}
+.classified{font:400 10.4px/1.22 "Old Standard TT","TeX Gyre Bonum",Georgia,serif;text-align:justify;hyphens:auto}
+.classified b{font:700 10.4px "Archivo Narrow","Liberation Sans Narrow",sans-serif;letter-spacing:.04em}
+.classified p{margin:0 0 4px}
+.classified hr{border:0;border-top:1px solid var(--ink);margin:4px 30px}

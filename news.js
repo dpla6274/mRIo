@@ -7,7 +7,7 @@
    ═══════════════════════════════════════════════════════════ */
 const MUSIC = {
   tracks: [
-    { youtube: 'https://www.youtube.com/watch?v=3r4GNv9b4KQ&list=RD3r4GNv9b4KQ&start_radio=1', title: '' },
+    { youtube: 'https://www.youtube.com/watch?v=3r4GNv9b4KQ&list=RD3r4GNv9b4KQ&start_radio=1', title: 'Solitude' },
     // { youtube: 'https://www.youtube.com/watch?v=XXXXXXXXXXX', title: '' },
     // { file: 'assets/music/my-song.mp3', title: 'My Song' },
   ],
@@ -19,47 +19,71 @@ const MUSIC = {
 /* ── 화면 맞춤: 1920px 폭 기준을 창 폭에 맞게 확대/축소 ── */
 const stage = document.getElementById('stage');
 /* ── 화면 맞춤 (반응형) ──────────────────────────────
-   1) 창 폭에 맞춰 배율(z)을 정함
-   2) 머리 영역 + 가장 긴 단이 창 높이 안에 모두 들어가도록 세로 간격 배율(--gs)을 줄임
-      (작업 표시줄·주소창 높이와 상관없이 실제 보이는 창 높이 기준 → 내부 스크롤 없음)
-   3) 간격을 MIN_GAP까지 줄여도 모자라면 전체를 축소 (좌우에 종이 여백이 생김)
-   4) 여유가 있으면 PSD 간격 그대로, 남는 높이는 맨 위 87px(주소창 자리)부터 채움 */
-const ADDRESS_BAR = 87, MIN_GAP = 0.3;
-let colMetrics = null;
-function measureColumns(){
-  const st = stage.style, prev = [st.getPropertyValue('--z'), st.getPropertyValue('--gs')];
-  st.setProperty('--z', 1);
-  const res = [];
-  const cols = [...document.querySelectorAll('.page .col')];
-  const bottomOf = c => { const last = c.lastElementChild; return last ? last.offsetTop + last.offsetHeight : 0; };
-  st.setProperty('--gs', 0); const f = cols.map(bottomOf);
-  st.setProperty('--gs', 1); const g = cols.map(bottomOf);
-  cols.forEach((c, i) => res.push({F: f[i], G: g[i] - f[i]}));
-  st.setProperty('--z', prev[0] || 1); st.setProperty('--gs', prev[1] || 1);
-  return res;
+   · 가로: 창 폭에 맞춰 배율(z)
+   · 세로: 주소창·작업 표시줄을 뺀 "실제 보이는 창 높이"에 맞춤 (내부 스크롤 없음, 3↔4면만 스크롤)
+   · 위·아래 여백(PAD)은 고정. 남는/모자란 높이는 개체 사이 간격으로만 조절
+   · 단마다 간격을 따로 계산해서 모든 단이 같은 줄에서 끝남
+   · 광고는 자리가 모자라면 우선순위 숫자가 큰 것부터 숨김
+   · 그래도 모자라면(아주 낮은 창) 전체를 축소 */
+const ADDRESS_BAR = 87, PAD = 18, MIN_PX = 7, MIN_GS = 0.3, CG_MAX = 4;
+let cols = null;
+function measure(){
+  stage.style.setProperty('--z', 1);
+  document.querySelectorAll('.ad-off').forEach(e => e.classList.remove('ad-off'));
+  cols = [...document.querySelectorAll('.page > .col')].map(c => ({
+    el: c,
+    items: [...c.children].map(k => ({
+      el: k, h: k.offsetHeight, ad: k.classList.contains('ad'),
+      pr: +(k.dataset.pr || 1), mt: parseFloat(getComputedStyle(k).getPropertyValue('--mt')) || 0
+    }))
+  }));
 }
-// 머리 영역 높이(위 87px 제외) = 284 + 86·gs, 아래 여백 = 8 + 20·gs
-const need = gs => 284 + 86 * gs + 8 + 20 * gs + Math.max(...colMetrics.map(c => c.F + c.G * gs));
+// 한 단의 높이: 개체 높이 합 + 간격(첫 개체 제외, 최소 MIN_PX)
+function colHeight(items, cg){
+  let h = 0, first = true;
+  for (const it of items){ h += it.h; if (!first) h += Math.max(MIN_PX, it.mt * cg); first = false; }
+  return h;
+}
+const textOnly = c => c.items.filter(i => !i.ad);
+const need = gs => 284 + 86 * gs + 2 * PAD + Math.max(...cols.map(c => colHeight(textOnly(c), gs)));
 function fit(){
-  if (!colMetrics) colMetrics = measureColumns();
+  if (!cols) measure();
   const W = window.innerWidth, Hpx = window.innerHeight;
   let z = W / 1920, H = Hpx / z, gs = 1, top = 0;
-  if (need(1) <= H){
-    top = Math.min(ADDRESS_BAR, H - need(1));
-  } else {
-    gs = Math.min(...colMetrics.map(c => (H - 292 - c.F) / (c.G + 106)));
-    if (gs < MIN_GAP){ gs = MIN_GAP; z = Hpx / need(MIN_GAP); H = Hpx / z; }
+  // 1) 머리 영역 간격(gs)과 맨 위 87px 노출량(top)
+  if (need(1) <= H) top = Math.min(ADDRESS_BAR, H - need(1));
+  else if (need(MIN_GS) > H){ gs = MIN_GS; z = Hpx / need(MIN_GS); H = Hpx / z; }
+  else { let lo = MIN_GS, hi = 1; for (let i = 0; i < 30; i++){ const m = (lo + hi) / 2; need(m) <= H ? lo = m : hi = m; } gs = lo; }
+  const avail = H - (top + 284 + 86 * gs) - 2 * PAD - 0.5;
+  // 2) 단마다: 들어갈 광고 고르기 → 간격 배율(cg) 계산
+  for (const c of cols){
+    let vis = c.items.slice();
+    while (colHeight(vis, 0) > avail){
+      const ads = vis.filter(i => i.ad); if (!ads.length) break;
+      const drop = ads.reduce((a, b) => b.pr >= a.pr ? b : a);
+      vis = vis.filter(i => i !== drop);
+    }
+    let cg;
+    if (colHeight(vis, CG_MAX) <= avail) cg = CG_MAX;
+    else { let lo = 0, hi = CG_MAX; for (let i = 0; i < 30; i++){ const m = (lo + hi) / 2; colHeight(vis, m) <= avail ? lo = m : hi = m; } cg = lo; }
+    c.el.style.setProperty('--cg', cg.toFixed(4));
+    for (const it of c.items){
+      it.el.classList.toggle('ad-off', !vis.includes(it));
+      it.el.classList.toggle('lead', it === vis[0]);
+    }
   }
   stage.style.setProperty('--z', z);
   stage.style.setProperty('--gs', gs.toFixed(4));
   stage.style.setProperty('--top', top.toFixed(2) + 'px');
   stage.style.height = H + 'px';
 }
+let fitRaf = 0;
+const queueFit = () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(fit); };
 fit();
-window.addEventListener('resize', fit, {passive:true});
-if (window.visualViewport) visualViewport.addEventListener('resize', fit, {passive:true});
-// 글꼴이 늦게 들어오면 본문 줄 수가 바뀌므로 다시 측정
-(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { colMetrics = null; fit(); });
+window.addEventListener('resize', queueFit, {passive:true});
+if (window.visualViewport) visualViewport.addEventListener('resize', queueFit, {passive:true});
+// 글꼴이 늦게 들어오면 줄 수·광고 높이가 바뀌므로 다시 측정
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { cols = null; fit(); });
 
 /* ── 제목 위 투명 텍스트를 PSD 글자 폭에 맞춤 (드래그 범위가 글자와 일치하도록) ── */
 function fitSelectableText(){
@@ -176,7 +200,7 @@ document.querySelector('.masthead').addEventListener('wheel', e => {
   function load(i){
     if (engine){ engine.destroy(); engine = null; }
     idx = i; const t = tracks[i];
-    setTitle(t.title || (t.youtube ? 'loading…' : t.file.split('/').pop()));
+    setTitle(t.title || (t.youtube ? '—' : t.file.split('/').pop()));
     loading = (t.youtube && t.youtube.trim() ? ytEngine(t) : fileEngine(t)).then(e => { engine = e; loading = null; paint(); return e; });
     return loading;
   }
@@ -191,7 +215,7 @@ document.querySelector('.masthead').addEventListener('wheel', e => {
     ui.root.classList.contains('playing') ? engine.pause() : engine.play();
   }
   // 제목은 미리 표시 (유튜브 API는 첫 재생 때 불러옴)
-  setTitle(tracks[0].title || (tracks[0].youtube ? 'PRESS ▶ TO PLAY' : tracks[0].file.split('/').pop()));
+  setTitle(tracks[0].title || (tracks[0].youtube ? '—' : tracks[0].file.split('/').pop()));
 
   ui.play.addEventListener('click', toggle);
   ui.next.addEventListener('click', () => load((idx + 1) % tracks.length).then(e => e.play()));
