@@ -79,3 +79,14 @@ tracks: [
 - 반응형 세로 배치: 주소창·작업 표시줄을 뺀 실제 창 높이에 맞춤. 위·아래 여백(18px, `news.js`의 `PAD`)은 고정, 남는 높이는 단마다 개체 사이 간격으로 나눠서 모든 단이 같은 줄에서 끝남.
 - 광고: `news-ads.js`. 맨 아래 `PLACEMENT`에서 면·단·위치·우선순위 설정. 창이 낮으면 우선순위 숫자가 큰 광고부터 자동으로 숨김.
 - 재생 바: 처음부터 곡 제목(Solitude) 표시.
+
+## v14
+- 링크: 마리아 이름 → 티스토리 VITTORIO 카테고리, 비토리오 이름 → caveduck, 마리아 그림 → 유튜브 재생목록.
+- 비토리오 그림 클릭 → "윤전기" 전환: 미리 불러 둔 신문이 아래에서 위로 올라온 뒤 news.html로 이동 (`script.js` 맨 아래, `style.css`의 `.press-sheet`). 속도는 `.press-sheet`의 `1.1s`.
+
+## v15
+- 신문 제호 "The New York Times." 클릭 → 메인으로 (신문이 아래로 내려가며 메인이 드러남).
+- 비토리오 수첩: 연대기 "Taken in by Silvio Salvatore…"에 마우스를 올리면 빨갛게(difference). 누르면 열리고 한 번 더 누르면 닫힘. 열 때마다 다른 쪽지, 수첩을 누르면 다음 장, 바깥/Esc로도 닫힘. 쪽지 내용·날짜는 `notebook.js` 맨 위 `NOTES`.
+- 눈: `snow.js`. PSD 구성 그대로 (배경 + 눈) ÷ 노이즈를 WebGL로 실시간 합성 → 커서 근처 눈송이가 비켜났다 돌아옴. 세기는 `PUSH_RADIUS`, `PUSH_POWER`, `RETURN`.
+  새 파일: assets/scene-base.png(눈 없는 배경), scene-noise.png(나누기 노이즈), scene-mask.png(노이즈 마스크). WebGL이 안 되면 scene-static.png(정지 화면) 표시.
+- 메인 배경을 PSD(2.psd)에서 다시 합성. 비토리오 이름은 원래 자리에서 빠지고 올린 위치에만 표시 → title-clean-vittorio.png 삭제.

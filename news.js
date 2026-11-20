@@ -98,7 +98,7 @@ function fitSelectableText(){
 
 /* ── 키보드 ↑↓ / PageUp·PageDown으로도 면 넘기기 ── */
 const pages = document.getElementById('pages');
-pages.focus({preventScroll:true});
+if (window === window.top) pages.focus({preventScroll:true});   // 메인 화면이 미리 불러 둔 상태에서는 포커스를 가져가지 않음
 document.addEventListener('keydown', e => {
   if (document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
   if (e.target.closest && e.target.closest('.pl-track')) return;
@@ -245,4 +245,29 @@ document.querySelector('.masthead').addEventListener('wheel', e => {
       if (!ui.root.classList.contains('playing')) toggle();
     }, true);
   }
+})();
+
+/* ── 제호(The New York Times.) 클릭 → 메인으로: 신문이 아래로 내려가며 메인 화면이 드러남 ── */
+(function(){
+  const link = document.getElementById('homeLink');
+  if (!link || window !== window.top) return;
+  let back = null, going = false;
+  function prepare(){
+    if (back) return;
+    back = document.createElement('iframe');
+    back.src = 'index.html'; back.title = ''; back.tabIndex = -1; back.setAttribute('aria-hidden', 'true');
+    back.className = 'home-behind';
+    document.body.prepend(back);
+  }
+  window.addEventListener('load', () => setTimeout(prepare, 1500));
+  link.addEventListener('click', e => {
+    e.preventDefault(); if (going) return; going = true; prepare();
+    const st = document.getElementById('stage');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      back.classList.add('show'); st.classList.add('rolling-down');
+      const done = () => { location.href = 'index.html'; };
+      st.addEventListener('transitionend', done, {once:true}); setTimeout(done, 1600);
+    }));
+  });
+  window.addEventListener('pageshow', () => { going = false; const st = document.getElementById('stage'); st.classList.remove('rolling-down'); if (back) back.classList.remove('show'); });
 })();

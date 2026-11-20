@@ -7,8 +7,12 @@
   <title>MARIA PARK × VITTORIO</title>
   <meta name="description" content="MARIA PARK × VITTORIO — private archive">
   <link rel="preload" as="image" href="assets/scene-static.png">
-  <link rel="stylesheet" href="style.css?v=11">
-  <script src="script.js?v=11" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600;1,700&display=swap">
+  <link rel="stylesheet" href="style.css?v=13">
+  <script src="script.js?v=13" defer></script>
+  <script src="snow.js?v=1" defer></script>
+  <script src="notebook.js?v=2" defer></script>
 </head>
 <body>
  <main class="viewport" id="viewport" aria-label="MARIA PARK × VITTORIO">
@@ -21,7 +25,6 @@
      <!-- 기존 픽셀 글씨를 다시 겹쳐 쓰지 않도록, 해당 픽셀을 원본 배경으로 덮고 빨간 글씨를 노출. -->
      <img class="title-wipe title-clean title-clean-maria" src="assets/title-clean-maria.png" draggable="false" alt="">
      <img class="title-wipe title-red title-red-maria" src="assets/title-red-maria.png" draggable="false" alt="">
-     <img class="title-wipe title-clean title-clean-vittorio" src="assets/title-clean-vittorio.png" draggable="false" alt="">
      <!-- 원래 자리의 글씨는 clean 으로 지우고, 작업 표시줄에 가리지 않도록 올린 위치에 흰 글씨를 다시 그림 -->
      <img class="title-wipe title-white-vittorio" src="assets/title-white-vittorio.png" draggable="false" alt="">
      <img class="title-wipe title-red title-red-vittorio" src="assets/title-red-vittorio.png" draggable="false" alt="">
@@ -42,10 +45,16 @@
      </section>
      <section class="chronology vittorio-copy" aria-label="비토리오 연대기">
       <p style="--top:0px"><strong>1909–1919</strong><span>Raised as an orphan in the slums of New York.</span></p>
-      <p style="--top:64px"><strong>1920</strong><span>Taken in by Silvio Salvatore at ten years of age.<br>Lost his tongue at Silvio's hands.</span></p>
+      <p style="--top:64px"><strong>1920</strong><span class="note-trigger" role="button" tabindex="0" aria-label="비토리오의 수첩 열기">Taken in by Silvio Salvatore at ten years of age.<br>Lost his tongue at Silvio's hands.</span></p>
       <p style="--top:148px"><strong>1920–1939</strong><span>Spent the next two decades in Silvio Salvatore's service.</span></p>
       <p style="--top:211px"><strong>1940–</strong><span>Assigned as the personal bodyguard of violinist Maria Park.</span></p>
      </section>
+     <!-- 비토리오의 몰스킨 포켓 수첩 -->
+     <aside class="notebook" id="notebook" aria-live="polite" hidden>
+       <div class="nb-cover"></div>
+       <div class="nb-page" id="nbPage"><div class="nb-date" id="nbDate"></div><div class="nb-text" id="nbText"></div></div>
+       <div class="nb-band"></div><div class="nb-ribbon"></div>
+     </aside>
    </div>
  </main>
 </body>

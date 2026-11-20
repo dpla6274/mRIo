@@ -1,6 +1,6 @@
 /* 네 가지 링크만 바꾸면 됩니다. 주소가 빈 문자열이면 클릭해도 이동하지 않습니다. */
 const LINKS={
-  mariaName:'',
+  mariaName:'https://dpla-g6274.tistory.com/category/VITTORIO',
   vittorioName:'https://caveduck.io/ko/share/characters/4dd9205a-b982-496f-9597-72c5ddfc8b49?rc=1qQMZ53X9o&_share_hash=',
   mariaImage:'https://youtube.com/playlist?list=PLPOv65CdoMiw&si=R1mKH4y3lfv6whMW',
   vittorioImage:'news.html'   // 비토리오 그림 클릭 → 신문 3·4면
@@ -76,7 +76,7 @@ for(const el of document.querySelectorAll('.hotspot')){
  el.setAttribute('href',url||'#');
  // 사이트 안 페이지(news.html 등)는 같은 탭에서, 외부 주소는 새 탭에서 엽니다.
  if(/^https?:\/\//i.test(url)){el.setAttribute('target','_blank');el.setAttribute('rel','noopener noreferrer');}
- el.addEventListener('click',e=>{if(!url||blockClick)e.preventDefault();});
+ el.addEventListener('click',e=>{if(!url||blockClick){e.preventDefault();return;}if(key==='vittorioImage'&&url==='news.html'){e.preventDefault();pressTo(url);}});
  el.addEventListener('pointerenter',()=>scene.dataset.hover=el.dataset.hover);
  el.addEventListener('pointerleave',()=>{if(scene.dataset.hover===el.dataset.hover)scene.removeAttribute('data-hover');});
  el.addEventListener('focus',()=>scene.dataset.hover=el.dataset.hover);
@@ -102,3 +102,30 @@ viewport.addEventListener('pointermove',e=>{
 function endDrag(e){if(!drag||drag.id!==e.pointerId)return;if(drag.moved){blockClick=true;setTimeout(()=>blockClick=false,120)}drag=null}
 viewport.addEventListener('pointerup',endDrag);
 viewport.addEventListener('pointercancel',endDrag);
+
+
+/* ── 페이지 전환: 윤전기 (신문이 아래에서 위로 올라옴) ──
+   신문 페이지를 미리 뒤에서 불러 두었다가 밀어 올리고, 다 올라오면 실제로 이동 → 끊김 없음 */
+let pressSheet=null, pressing=false;
+function preparePress(){
+  if(pressSheet)return;
+  pressSheet=document.createElement('div');
+  pressSheet.className='press-sheet';
+  pressSheet.innerHTML='<iframe src="news.html" title="" tabindex="-1" aria-hidden="true"></iframe>';
+  document.body.appendChild(pressSheet);
+}
+function pressTo(url){
+  if(pressing)return; pressing=true;
+  preparePress();
+  const go=()=>{
+    pressSheet.classList.add('rolling');
+    const done=()=>{location.href=url;};
+    pressSheet.addEventListener('transitionend',done,{once:true});
+    setTimeout(done,1600);   // 혹시 transitionend가 안 오면
+  };
+  requestAnimationFrame(()=>requestAnimationFrame(go));
+}
+// 메인 화면이 다 뜬 뒤 조용히 미리 불러 둠
+if(window===window.top)window.addEventListener('load',()=>setTimeout(preparePress,800));   // 신문 페이지 안에 미리 불려 있을 땐 다시 불러오지 않음
+// 뒤로 가기로 돌아왔을 때 덮여 있는 신문 치우기
+window.addEventListener('pageshow',e=>{if(pressSheet){pressSheet.classList.remove('rolling');pressing=false;}});
