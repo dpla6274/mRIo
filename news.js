@@ -7,7 +7,7 @@
    ═══════════════════════════════════════════════════════════ */
 const MUSIC = {
   tracks: [
-    { youtube: 'https://www.youtube.com/watch?v=3r4GNv9b4KQ&list=RD3r4GNv9b4KQ&start_radio=1', title: 'Solitude' },
+    { youtube: 'https://www.youtube.com/watch?v=aCi59-y6dNg', title: 'Autumn Leaves' },
     // { youtube: 'https://www.youtube.com/watch?v=XXXXXXXXXXX', title: '' },
     // { file: 'assets/music/my-song.mp3', title: 'My Song' },
   ],
