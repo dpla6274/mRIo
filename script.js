@@ -129,3 +129,21 @@ function pressTo(url){
 if(window===window.top)window.addEventListener('load',()=>setTimeout(preparePress,800));   // 신문 페이지 안에 미리 불려 있을 땐 다시 불러오지 않음
 // 뒤로 가기로 돌아왔을 때 덮여 있는 신문 치우기
 window.addEventListener('pageshow',e=>{if(pressSheet){pressSheet.classList.remove('rolling');pressing=false;}});
+
+/* ── 모바일 첫 화면: 마리아 쪽에서 가운데로 천천히 이동 + "드래그" 안내 ── */
+(function(){
+  if(!mobileMode.matches||!maxPanX||window!==window.top)return;
+  const hint=document.createElement('div');
+  hint.className='pan-hint'; hint.textContent='← drag →';
+  document.body.appendChild(hint);
+  let stop=false; const cancel=()=>{stop=true;hint.classList.add('gone');};
+  viewport.addEventListener('pointerdown',cancel,{once:true});
+  panX=maxPanX; renderScene();
+  const t0=performance.now()+700, dur=2200, from=maxPanX;
+  (function tick(now){
+    if(stop)return;
+    const k=Math.min(1,Math.max(0,(now-t0)/dur)), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    panX=from*(1-e); renderScene();
+    if(k<1)requestAnimationFrame(tick); else setTimeout(()=>hint.classList.add('gone'),1800);
+  })(performance.now());
+})();

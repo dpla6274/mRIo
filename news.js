@@ -46,7 +46,28 @@ function colHeight(items, cg){
 }
 const textOnly = c => c.items.filter(i => !i.ad);
 const need = gs => 284 + 86 * gs + 2 * PAD + Math.max(...cols.map(c => colHeight(textOnly(c), gs)));
+const mobileMQ = window.matchMedia('(max-width: 899px), (orientation: portrait)');
+const isMobile = () => mobileMQ.matches;
+// 모바일: 1920 화면 축소 대신 세로로 쌓고, 넓은 제목만 화면 폭에 맞게 줄임
+function fitMobile(){
+  document.documentElement.classList.add('m');
+  stage.style.removeProperty('--z'); stage.style.height = '';
+  document.querySelectorAll('.ad-off').forEach(e => e.classList.remove('ad-off'));
+  document.querySelectorAll('.page > .col').forEach(c => { c.style.removeProperty('--cg'); [...c.children].forEach((k, i) => k.classList.toggle('lead', i === 0)); });
+  const avail = Math.min(520, document.documentElement.clientWidth - 36);
+  const hdW = el => parseFloat(el.style.getPropertyValue('--w')) || el.offsetWidth;
+  document.querySelectorAll('.page .hd, .hd-masthead, .hd-edition').forEach(el => { el.style.zoom = Math.min(1, avail / hdW(el)); });
+  const hm = [...document.querySelectorAll('.hd-m')];
+  const k = Math.min(.75, (document.documentElement.clientWidth - 28) / Math.max(...hm.map(hdW)));
+  hm.forEach(el => el.style.zoom = k);
+}
+function fitDesktop(){
+  document.documentElement.classList.remove('m');
+  document.querySelectorAll('.hd').forEach(el => el.style.zoom = '');
+}
 function fit(){
+  if (isMobile()) return fitMobile();
+  fitDesktop();
   if (!cols) measure();
   const W = window.innerWidth, Hpx = window.innerHeight;
   let z = W / 1920, H = Hpx / z, gs = 1, top = 0;
@@ -82,11 +103,19 @@ const queueFit = () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimation
 fit();
 window.addEventListener('resize', queueFit, {passive:true});
 if (window.visualViewport) visualViewport.addEventListener('resize', queueFit, {passive:true});
+mobileMQ.addEventListener && mobileMQ.addEventListener('change', () => { cols = null; queueFit(); });
 // 글꼴이 늦게 들어오면 줄 수·광고 높이가 바뀌므로 다시 측정
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { cols = null; fit(); });
 
 /* ── 제목 위 투명 텍스트를 PSD 글자 폭에 맞춤 (드래그 범위가 글자와 일치하도록) ── */
 function fitSelectableText(){
+  const zs = [...document.querySelectorAll('.hd')].map(el => [el, el.style.zoom]);
+  const sz = stage.style.getPropertyValue('--z');
+  zs.forEach(([el]) => el.style.zoom = ''); stage.style.setProperty('--z', 1);
+  measureSel();
+  zs.forEach(([el, z]) => el.style.zoom = z); if (sz) stage.style.setProperty('--z', sz); else stage.style.removeProperty('--z');
+}
+function measureSel(){
   for (const ln of document.querySelectorAll('.sel .ln')){
     ln.style.setProperty('--sx', 1);
     const target = parseFloat(getComputedStyle(ln).getPropertyValue('--lw'));
@@ -102,12 +131,14 @@ if (window === window.top) pages.focus({preventScroll:true});   // 메인 화면
 document.addEventListener('keydown', e => {
   if (document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
   if (e.target.closest && e.target.closest('.pl-track')) return;
+  if (isMobile()) return;
   const step = pages.clientHeight;
   if (['PageDown',' '].includes(e.key) && !e.shiftKey){ pages.scrollBy({top:step, behavior:'smooth'}); e.preventDefault(); }
   if (e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)){ pages.scrollBy({top:-step, behavior:'smooth'}); e.preventDefault(); }
 });
 /* 머리 영역 위에서 굴려도 아래 면이 넘어가도록 */
 document.querySelector('.masthead').addEventListener('wheel', e => {
+  if (isMobile()) return;
   pages.scrollBy({top:e.deltaY, left:0}); e.preventDefault();
 }, {passive:false});
 
@@ -262,8 +293,9 @@ document.querySelector('.masthead').addEventListener('wheel', e => {
     back.className = 'home-behind';
     document.body.prepend(back);
   }
-  window.addEventListener('load', () => setTimeout(prepare, 1500));
+  window.addEventListener('load', () => setTimeout(() => { if (!isMobile()) prepare(); }, 1500));
   link.addEventListener('click', e => {
+    if (isMobile()) return;            // 모바일은 바로 이동
     e.preventDefault(); if (going) return; going = true; prepare();
     const st = document.getElementById('stage');
     requestAnimationFrame(() => requestAnimationFrame(() => {

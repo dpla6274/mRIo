@@ -157,3 +157,55 @@ a.txt{cursor:pointer}
 .stage{z-index:1;transition:transform 1.1s cubic-bezier(.6,0,.75,.85)}
 .stage.rolling-down{transform:translateY(102%);box-shadow:0 -14px 30px rgba(0,0,0,.45)}
 @media (prefers-reduced-motion:reduce){.stage{transition-duration:.01s}}
+
+/* ═══════════════════════════════════════════════════════════
+   모바일 / 세로 화면 (news.js가 html에 .m 을 붙임)
+   한 단씩 위에서 아래로 이어지는 세로 신문. 재생 바는 위에 고정.
+   ═══════════════════════════════════════════════════════════ */
+.m-headline{display:none}
+html.m,html.m body{height:auto;overflow-x:hidden;overflow-y:auto}
+html.m body{display:block;background:var(--paper)}
+.m .stage{width:100%;height:auto!important;zoom:1!important;overflow:visible;padding:6px 0 40px}
+.m .frame{position:relative;inset:auto}
+.m .masthead{display:contents}
+.m .box,.m .hd-motto,.m .hd-weather,.m .hd-temps,.m .hd-headline{display:none}
+.m .hd-abs{position:relative;left:auto;top:auto}
+.m .hd{margin-left:auto!important;margin-right:auto!important}
+.m .hd-masthead{margin-top:18px!important}
+.m .hd-edition{margin-top:8px!important}
+.m .dbl-full,.m .hline{position:relative;top:auto!important;left:auto;width:auto;margin:10px 14px 0}
+.m .r2{margin-top:0}
+/* 재생 바: 화면 위에 붙어 다님 */
+.m .player{position:sticky;top:0;z-index:60;left:auto;right:auto;margin:0 14px;height:40px;gap:10px;
+  background:var(--paper);font-size:12px;border-bottom:1px solid var(--line)}
+.m .pl-label{display:none}
+.m .pl-title{max-width:none;flex:1 1 0;min-width:0}
+.m .pl-track{flex:0 0 22%}
+.m .pl-time{font-size:11px}
+.m .pl-btn{width:30px;height:30px}
+.m .pl-btn svg{width:15px;height:15px}
+/* 헤드라인: 단어 묶음으로 나눠 줄바꿈 */
+.m .m-headline{display:block;text-align:center;padding:14px 14px 4px;line-height:0}
+.m .hd-m{display:inline-block;margin:0 .35em 8px!important;vertical-align:top}
+.m .hline{margin-top:6px}
+/* 본문 단: 세로로 쌓기 */
+.m .pages{position:static;overflow:visible;scroll-snap-type:none;height:auto}
+.m .page{display:block;height:auto!important;min-height:0;overflow:visible;padding:0 18px;scroll-snap-align:none}
+.m .page.ink{filter:none}
+.m .col,.m .col.span2,.m .subcol{width:auto;padding:0}
+.m .col{--cg:1!important;max-width:520px;margin:0 auto}
+.m .col::before{display:none}
+.m .col + .col{margin-top:26px;padding-top:4px;border-top:6px double var(--line)}
+.m .col > :first-child{margin-top:22px!important}
+.m .sub{display:block;margin:max(7px,17px) 0 0}
+.m .subcol + .subcol{margin-top:11.2px}
+.m .dbl{margin-left:0;margin-right:0}
+.m .rule{max-width:100%}
+.m .ad{margin-left:auto;margin-right:auto;max-width:330px}
+.m .ad-off{display:block!important}
+/* 면 구분 */
+.m .page::before{content:"PAGE " attr(data-page);display:block;margin:30px 0 0;padding:7px 0 6px;text-align:center;
+  font:700 12px/1 var(--mono);letter-spacing:.35em;color:var(--ink);border-top:2px solid var(--line);border-bottom:2px solid var(--line)}
+.m #page-3::before{margin-top:16px}
+.m .page + .page::after{content:"— FIN —";display:block;margin:40px 0 0;text-align:center;font:700 12px/1 var(--mono);letter-spacing:.3em;color:var(--ink)}
+.m .grain,.m .specks{position:absolute;inset:0;height:auto}

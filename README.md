@@ -94,3 +94,10 @@ tracks: [
 ## v17
 - 3면 PSD(ce51f169-3.psd) 반영: "We will be very old, we will be very merry." 아랫부분 잘림 수정.
 - 음악 교체 (aCi59-y6dNg). 제목은 유튜브에서 자동으로 받아 옴 → 직접 정하려면 news.js의 title: '' 에 입력.
+
+## v18
+- 4면 PSD(d3abf335-4.psd) 반영: "I won't let you die. Even if you hate me forever." 잘림 수정.
+- 모바일/세로 화면 (폭 900px 미만 또는 세로 방향):
+  · news.html: 한 단씩 세로로 쌓이는 신문. 제호·LATE CITY EDITION → 재생 바(위에 고정) → 헤드라인(단어 묶음으로 줄바꿈) → PAGE 3 → PAGE 4 → FIN. 광고는 모두 표시. 제호 누르면 바로 메인으로.
+  · index.html: 처음에 마리아 쪽에서 가운데로 천천히 이동 + "← drag →" 안내. (기존처럼 좌우로 끌어서 보기)
+  · 헤드라인 모바일용 조각: assets/news/headline-m1~8.png
