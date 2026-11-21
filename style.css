@@ -10,7 +10,7 @@ body{font-family:"Times New Roman",Tinos,Georgia,serif}
 .hover-layer{position:absolute;z-index:3;display:block;pointer-events:none;user-select:none;transition:clip-path var(--red-duration) cubic-bezier(.45,0,.2,1);will-change:clip-path}
 .hover-maria{mix-blend-mode:multiply;left:458px;top:167px;width:1023px;height:913px;clip-path:inset(100% 0 0 0)}
 .scene[data-hover="maria"] .hover-maria{clip-path:inset(0 0 0 0)}
-.hover-vittorio{mix-blend-mode:screen;left:927px;top:247px;width:616px;height:833px;clip-path:inset(0 0 100% 0)}
+.hover-vittorio{mix-blend-mode:screen;left:927px;top:248px;width:615px;height:832px;clip-path:inset(0 0 100% 0)}
 .scene[data-hover="vittorio"] .hover-vittorio{clip-path:inset(0 0 0 0)}
 .title-wipe{position:absolute;display:block;pointer-events:none;user-select:none;transition:clip-path var(--red-duration) cubic-bezier(.45,0,.2,1);will-change:clip-path}
 .title-clean{z-index:5}

@@ -101,3 +101,7 @@ tracks: [
   · news.html: 한 단씩 세로로 쌓이는 신문. 제호·LATE CITY EDITION → 재생 바(위에 고정) → 헤드라인(단어 묶음으로 줄바꿈) → PAGE 3 → PAGE 4 → FIN. 광고는 모두 표시. 제호 누르면 바로 메인으로.
   · index.html: 처음에 마리아 쪽에서 가운데로 천천히 이동 + "← drag →" 안내. (기존처럼 좌우로 끌어서 보기)
   · 헤드라인 모바일용 조각: assets/news/headline-m1~8.png
+
+## v19
+- 메인 호버 레이어를 PSD(4d533fdc-2.psd)의 M-mousehover / V-mousehover에서 다시 추출.
+  예전 hover-maria.png에 옛 위치의 연대기 글자 조각("Spent" 등)이 박혀 있어서, 연대기를 올린 뒤 글자가 겹쳐 보이던 문제 수정. V 호버 위치도 PSD 좌표(927, 248)에 정확히 맞춤.
