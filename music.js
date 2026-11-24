@@ -16,8 +16,15 @@ const isM = () => html.classList.contains('m');
 /* ── 화면 맞춤 ── */
 const mq = matchMedia('(max-width: 899px), (orientation: portrait)');
 function fit(){
-  if (mq.matches){ html.classList.add('m'); stage.style.removeProperty('--z'); }
-  else { html.classList.remove('m'); stage.style.setProperty('--z', Math.min(innerWidth / 1920, innerHeight / 1000)); }
+  if (mq.matches){ html.classList.add('m'); stage.style.removeProperty('--z'); stage.style.width = stage.style.height = ''; }
+  else {
+    // 메인처럼 창 전체를 채움: 배율은 작은 쪽 기준, 남는 쪽은 무대를 늘려서 빈 띠가 생기지 않게
+    html.classList.remove('m');
+    const z = Math.min(innerWidth / 1920, innerHeight / 1000);
+    stage.style.setProperty('--z', z);
+    stage.style.width = (innerWidth / z) + 'px'; stage.style.height = (innerHeight / z) + 'px';
+    stage.style.setProperty('--k', Math.max(1, (innerHeight / z) / 1000));   // 무대가 세로로 길어지면 LP도 같이 커져서 위아래가 계속 잘림
+  }
 }
 fit(); addEventListener('resize', fit, {passive:true}); mq.addEventListener && mq.addEventListener('change', fit);
 

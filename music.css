@@ -12,26 +12,26 @@ button{all:unset;cursor:pointer}
 .stage::after{content:"";position:absolute;inset:0;background:url(assets/scene-noise.png) 0 0/1920px 1080px;mix-blend-mode:screen;opacity:.16;pointer-events:none;z-index:50}
 
 /* ── 첫 화면: 커버 ── */
-.sleeve{position:absolute;left:660px;top:200px;width:600px;height:600px;z-index:3;cursor:pointer;outline:none;
+.sleeve{position:absolute;left:calc(50% - 300px);top:calc(50% - 300px);width:600px;height:600px;z-index:3;cursor:pointer;outline:none;
   background:#000 url(assets/music/cover.png) center/94% no-repeat;
   box-shadow:0 0 0 1.5px rgba(255,255,255,.75),0 0 0 7px #000,0 0 0 8px rgba(255,255,255,.35);
   transition:left var(--open),top var(--open),width var(--open),height var(--open),visibility 0s 1.2s}
 .sleeve:hover,.sleeve:focus-visible{box-shadow:0 0 0 1.5px var(--red),0 0 0 7px #000,0 0 0 8px rgba(255,0,0,.5)}
 /* LP와 같은 비율로 같이 커지면서 왼쪽으로 빠짐 (LP 540:커버 600 = LP 1180:커버 1310) */
-.open .sleeve{left:-1560px;top:-155px;width:1310px;height:1310px;visibility:hidden;pointer-events:none}
+.open .sleeve{left:calc(-1560px * var(--k,1));top:calc(50% - 655px * var(--k,1));width:calc(1310px * var(--k,1));height:calc(1310px * var(--k,1));visibility:hidden;pointer-events:none}
 
 /* ── LP: 왼쪽 꽉 차게 ── */
-.lp{position:absolute;left:-470px;top:-90px;width:1180px;height:1180px;border-radius:50%;cursor:pointer;outline:none;z-index:2;
+.lp{position:absolute;left:calc(-470px * var(--k,1));top:calc(50% - 590px * var(--k,1));width:calc(1180px * var(--k,1));height:calc(1180px * var(--k,1));border-radius:50%;cursor:pointer;outline:none;z-index:2;
   transition:left var(--open),top var(--open),width var(--open),height var(--open),opacity .8s}
-.intro .lp{left:690px;top:230px;width:540px;height:540px;pointer-events:none}
-.pull .sleeve{left:40px;transition:left .85s cubic-bezier(.4,0,.2,1)}
+.intro .lp{left:calc(50% - 270px);top:calc(50% - 270px);width:540px;height:540px;pointer-events:none}
+.pull .sleeve{left:calc(50% - 920px);transition:left .85s cubic-bezier(.4,0,.2,1)}
 .lp img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;animation:spin 1.8s linear infinite;animation-play-state:paused}
 .playing .lp img{animation-play-state:running}
 .lp::after{display:none;content:"";position:absolute;inset:5px;border-radius:50%;box-shadow:0 0 0 1.2px rgba(255,255,255,.45);pointer-events:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── 오른쪽 열: 위·아래 여백 같게, 문장만 스크롤 ── */
-.col{position:absolute;left:1390px;right:60px;top:var(--gap);bottom:var(--gap);display:flex;flex-direction:column;
+.col{position:absolute;left:auto;width:470px;right:60px;top:var(--gap);bottom:var(--gap);display:flex;flex-direction:column;
   opacity:0;pointer-events:none;transition:opacity .8s .6s}
 .open .col{opacity:1;pointer-events:auto}
 
