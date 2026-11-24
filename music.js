@@ -57,12 +57,14 @@ function showTrack(i){
   rows.forEach((r, k) => r.classList.toggle('on', k === i));
   sws.forEach((d, k) => d.classList.toggle('on', k === i));
   renderWords(i);
-  if (isM() && scrollY > 0) scrollTo({top: 0, behavior: 'smooth'});
 }
 showTrack(0);
 
 /* ── 곡 목록 열고 닫기 ── */
-function placePop(){ const n = $('now'); col.style.setProperty('--pop-top', (n.offsetTop + n.offsetHeight + 22) + 'px'); }
+function placePop(){
+  if (isM()){ stage.style.setProperty('--pop-m', swipe.getBoundingClientRect().bottom + 'px'); return; }
+  const n = $('now'); col.style.setProperty('--pop-top', (n.offsetTop + n.offsetHeight + 22) + 'px');
+}
 const openList = () => {
   placePop(); col.classList.add('list'); swipe.classList.add('list');
   const r = rows[cur]; pop.scrollTop = r.offsetTop - pop.clientHeight / 2 + r.offsetHeight / 2;   // 목록 안에서만 스크롤
@@ -96,7 +98,7 @@ let player = null, ready = false, queued = null, vid = TRACKS.map(t => ytIdOf(t.
 function boot(){
   window.onYouTubeIframeAPIReady = () => {
     player = new YT.Player('yt', {
-      width: 200, height: 200,
+      width: 200, height: 200, host: 'https://www.youtube-nocookie.com',
       playerVars: {listType: 'playlist', list: listId, playsinline: 1, controls: 0, disablekb: 1, rel: 0, autoplay: 0},
       events: {
         onReady: () => { player.setVolume(vol * 100 / 7); player.cuePlaylist({listType: 'playlist', list: listId}); waitList(0); },
@@ -138,9 +140,34 @@ function assign(list){
 }
 const whenReady = fn => ready ? fn() : (queued = fn);
 
+/* ── 직접 올린 음원 (music-tracks.js 에서 file:'assets/music/파일.mp3') → 광고 없음 ── */
+const audio = new Audio(); audio.preload = 'auto';
+audio.addEventListener('play', () => setPlaying(true));
+audio.addEventListener('pause', () => setPlaying(false));
+audio.addEventListener('ended', () => { setPlaying(false); next(); });
+audio.addEventListener('error', () => { if (TRACKS[cur].file) next(); });
+let useFile = false;
+/* 유튜브/음원 어느 쪽이든 같은 방식으로 다루기 */
+const P = {
+  dur: () => useFile ? (audio.duration || 0) : (player && player.getDuration ? player.getDuration() : 0),
+  time: () => useFile ? audio.currentTime : (player && player.getCurrentTime ? player.getCurrentTime() : 0),
+  seek: s => useFile ? (audio.currentTime = s) : player && player.seekTo(s, true),
+  pause: () => useFile ? audio.pause() : player && player.pauseVideo && player.pauseVideo(),
+  play: () => useFile ? audio.play() : player && player.playVideo(),
+  vol: v => { audio.volume = v / 100; if (player && player.setVolume) player.setVolume(v); },
+  ok: () => useFile || !!(player && player.getDuration)
+};
+
 /* ── 재생 ── */
 function setPlaying(p){ playing = p; stage.classList.toggle('playing', p); col.classList.toggle('paused', !p); cancelAnimationFrame(raf); if (p) loop(); }
 function play(i){
+  if (TRACKS[i].file){
+    if (!useFile && player && player.pauseVideo) player.pauseVideo();
+    useFile = true;
+    if (loaded !== i){ loaded = i; audio.src = TRACKS[i].file; }
+    audio.play().catch(() => {}); return;
+  }
+  if (useFile){ audio.pause(); useFile = false; }
   whenReady(() => {
     const id = vid[i]; if (!id) return next();
     if (loaded !== i){ loaded = i; player.loadVideoById(id); } else player.playVideo();
@@ -148,7 +175,7 @@ function play(i){
 }
 function choose(i){ showTrack(i); swipeTo(i); play(i); }
 const next = () => choose((cur + 1) % TRACKS.length);
-function toggle(){ if (!player || loaded < 0) return play(cur); playing ? player.pauseVideo() : player.playVideo(); }
+function toggle(){ if (loaded < 0 || !P.ok()) return play(cur); playing ? P.pause() : P.play(); }
 col.classList.add('paused');
 
 /* 시작 */
@@ -167,7 +194,7 @@ $('sleeve').addEventListener('click', start);
 // 재생 중 LP를 다시 누르면 → 메인으로
 function goHome(){
   if (stage.classList.contains('leaving')) return;
-  if (player && player.pauseVideo) player.pauseVideo();
+  P.pause();
   stage.classList.add('leaving');
   setTimeout(() => { location.href = 'index.html'; }, 900);
 }
@@ -176,22 +203,22 @@ for (const el of [$('sleeve'), $('lp')]) el.addEventListener('keydown', e => { i
 document.addEventListener('keydown', e => { if (e.key === ' ' && !e.target.closest('button,a,[role=slider],.lp,.sleeve,.now')){ e.preventDefault(); stage.classList.contains('intro') ? start() : toggle(); } });
 $('bPlay').addEventListener('click', toggle);
 $('bNext').addEventListener('click', next);
-$('bPrev').addEventListener('click', () => { if (player && player.getCurrentTime && player.getCurrentTime() > 4) player.seekTo(0, true); else choose((cur - 1 + TRACKS.length) % TRACKS.length); });
+$('bPrev').addEventListener('click', () => { if (P.ok() && P.time() > 4) P.seek(0); else choose((cur - 1 + TRACKS.length) % TRACKS.length); });
 
 /* ── 진행 바 ── */
 let raf = 0;
 const fmt = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + pad(s % 60); };
 function paint(){
-  if (!player || !player.getDuration) return;
-  const d = player.getDuration() || 0, t = player.getCurrentTime() || 0, k = d ? Math.min(1, t / d) : 0;
+  if (!P.ok()) return;
+  const d = P.dur() || 0, t = P.time() || 0, k = d ? Math.min(1, t / d) : 0;
   $('fill').style.width = (k * 100) + '%'; $('tick').style.left = (k * 100) + '%';
   $('tm').textContent = fmt(t) + ' / ' + fmt(d); $('track').setAttribute('aria-valuenow', Math.round(k * 100));
 }
 function loop(){ paint(); raf = requestAnimationFrame(loop); }
 function seekAt(x){
-  if (!player || !player.getDuration || loaded < 0) return;
+  if (!P.ok() || loaded < 0) return;
   const r = $('track').getBoundingClientRect(), f = Math.min(1, Math.max(0, (x - r.left) / r.width));
-  player.seekTo(f * player.getDuration(), true); paint();
+  P.seek(f * P.dur()); paint();
 }
 $('track').addEventListener('pointerdown', e => {
   seekAt(e.clientX); $('track').setPointerCapture(e.pointerId);
@@ -199,15 +226,15 @@ $('track').addEventListener('pointerdown', e => {
   $('track').addEventListener('pointerup', () => $('track').removeEventListener('pointermove', mv), {once: true});
 });
 $('track').addEventListener('keydown', e => {
-  if (!player || loaded < 0) return;
-  if (e.key === 'ArrowRight'){ player.seekTo(player.getCurrentTime() + 5, true); e.preventDefault(); }
-  if (e.key === 'ArrowLeft'){ player.seekTo(Math.max(0, player.getCurrentTime() - 5), true); e.preventDefault(); }
+  if (!P.ok() || loaded < 0) return;
+  if (e.key === 'ArrowRight'){ P.seek(P.time() + 5); e.preventDefault(); }
+  if (e.key === 'ArrowLeft'){ P.seek(Math.max(0, P.time() - 5)); e.preventDefault(); }
 });
 
 /* ── 볼륨 막대 (7칸) ── */
 let vol = 5;
 const bars = [4, 6, 8, 10, 12, 14, 16].map(h => { const s = document.createElement('span'); s.style.height = h + 'px'; $('vol').appendChild(s); return s; });
-function setVol(v){ vol = Math.max(0, Math.min(7, v)); bars.forEach((b, k) => b.classList.toggle('on', k < vol)); $('vol').setAttribute('aria-valuenow', vol); if (player && player.setVolume) player.setVolume(vol * 100 / 7); }
+function setVol(v){ vol = Math.max(0, Math.min(7, v)); bars.forEach((b, k) => b.classList.toggle('on', k < vol)); $('vol').setAttribute('aria-valuenow', vol); P.vol(vol * 100 / 7); }
 setVol(vol);
 bars.forEach((b, k) => b.addEventListener('click', () => setVol(vol === k + 1 ? k : k + 1)));
 $('vol').addEventListener('wheel', e => { e.preventDefault(); setVol(vol - Math.sign(e.deltaY)); }, {passive: false});
