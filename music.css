@@ -96,7 +96,7 @@ button{all:unset;cursor:pointer}
    페이지 자체는 움직이지 않고(주소창 변화에 안 흔들림), 문장 칸만 스크롤.
    위에서부터: LP(일부) → 재생 바 → 곡 이름(옆으로 넘기기) → 문장 */
 html.m,html.m body{height:100%;overflow:hidden;display:block;overscroll-behavior:none}
-.m .stage{position:fixed;inset:0;width:auto;height:auto;zoom:1!important;overflow:hidden;display:flex;flex-direction:column;padding-top:52vw}
+.m .stage{position:fixed;left:0;right:0;top:0;bottom:auto;width:auto;height:100vh;height:100lvh;zoom:1!important;overflow:hidden;display:flex;flex-direction:column;padding-top:52vw}
 .m .sleeve{position:absolute;left:8vw;top:calc(50% - 42vw);width:84vw;height:84vw}
 .m .open .sleeve{left:-180vw;top:-36vw;width:124vw;height:124vw}
 .m .lp{position:absolute;left:-48vw;top:-30vw;width:112vw;height:112vw}
@@ -105,23 +105,24 @@ html.m,html.m body{height:100%;overflow:hidden;display:block;overscroll-behavior
 .m .col{display:contents}
 .m .bar,.m .swipe,.m .body{position:relative;z-index:4;background:#050505;transition:opacity .8s .6s}
 .m .stage:not(.open) .bar,.m .stage:not(.open) .swipe,.m .stage:not(.open) .body{opacity:0;pointer-events:none}
-.m .bar{flex:none;margin:0 20px;order:1}
+.m .bar{flex:none;margin:0;order:1}
+.m .bar .row{padding:8px 20px 7px}
 .m .swipe{order:2}
 .m .body{order:3}
 .m .pop{order:4}
 .m .bar .row{gap:14px}
 .m .vol,.m .now,.m .pop-line{display:none}
-.m .swipe{display:block;flex:none;border-bottom:1px solid rgba(255,255,255,.3);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  scrollbar-width:none;white-space:nowrap;padding:0 14vw;overscroll-behavior-x:contain}
+.m .swipe{display:flex;align-items:stretch;flex:none;border-bottom:1px solid rgba(255,255,255,.3);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+  scrollbar-width:none;padding:0;overscroll-behavior-x:contain}
 .m .swipe::-webkit-scrollbar{display:none}
-.m .sw{display:inline-block;width:72vw;scroll-snap-align:center;text-align:center;padding:10px 6px 12px;opacity:.35;transition:opacity .4s,color .45s;vertical-align:top;white-space:normal}
+.m .sw{flex:0 0 100vw;display:flex;flex-direction:column;justify-content:center;scroll-snap-align:center;text-align:center;padding:10px 24px 12px;opacity:0;transition:opacity .4s,color .45s}
 .m .sw.on{opacity:1}
 .m .list .sw.on,.m .swipe.list .sw.on{color:var(--red)}
 .m .sw .no{font:700 15px/1 var(--serif)}
 .m .sw .t{font:400 20px/1.15 var(--serif);margin-top:4px;word-break:keep-all;overflow-wrap:break-word}
 .m .sw .a{font:italic 400 14px/1.2 var(--serif);opacity:.75;margin-top:3px}
-.m .body{flex:1 1 auto;min-height:0;margin:0;padding:22px 20px 60px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-.m .pop{position:absolute;left:0;right:0;top:var(--pop-m,60vw);bottom:0;padding:10px 20px 50vh 46px;background:#050505 linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,.5)) 24px 0/1px 100% no-repeat local;z-index:6}
+.m .body{flex:1 1 auto;min-height:0;margin:0;padding:22px 20px 60px;padding-bottom:calc(60px + 100lvh - 100dvh);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.m .pop{position:absolute;left:0;right:0;top:var(--pop-m,60vw);bottom:0;padding:10px 20px calc(18vh + 100lvh - 100dvh) 46px;background:#050505 linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,.5)) 24px 0/1px 100% no-repeat local;z-index:6}
 .m .r{font-size:17px}
 .m .r b{width:56px}
 @media (prefers-reduced-motion:reduce){:root{--open:.01s}.lp img{animation:none}}
