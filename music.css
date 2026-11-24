@@ -138,3 +138,9 @@ html.m,html.m body{height:100%;overflow:hidden;display:block;overscroll-behavior
 .lp::before{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none}
 .leaving{transition:opacity .9s ease;opacity:0}
 .leaving .lp img{animation-play-state:paused}
+
+/* LP·커버는 배경 노이즈 위로 (검은 부분에 노이즈가 비치지 않게) */
+.lp,.sleeve{z-index:60}
+.sleeve{z-index:61}
+/* 모바일: LP가 노이즈 위로 올라가면서 재생 바 아래로 보이지 않도록 재생 바 높이에서 잘라냄 */
+.m .open .lp{clip-path:inset(0 0 30vw 0)}
