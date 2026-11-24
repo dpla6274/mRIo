@@ -143,4 +143,11 @@ html.m,html.m body{height:100%;overflow:hidden;display:block;overscroll-behavior
 .lp,.sleeve{z-index:60}
 .sleeve{z-index:61}
 /* 모바일: LP가 노이즈 위로 올라가면서 재생 바 아래로 보이지 않도록 재생 바 높이에서 잘라냄 */
-.m .open .lp{clip-path:inset(0 0 30vw 0)}
+
+/* 모바일: 노이즈를 배경 자체에 촘촘하게 깔고, 아래 판(재생 바~문장)이 LP 위로 올라와 덮음 */
+.m .stage::after{display:none}
+.m .stage,.m .stage::before,.m .bar,.m .swipe,.m .body{background:#050505 url(assets/music/noise-dark.png) 0 0/640px 360px}
+.m .pop{background:linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,.5)) 24px 0/1px 100% no-repeat local,url(assets/music/noise-dark.png) 0 0/640px 360px,#050505}
+.m .stage::before{z-index:62}
+.m .bar,.m .swipe,.m .body{z-index:63}
+.m .pop{z-index:64}
