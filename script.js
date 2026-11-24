@@ -2,7 +2,7 @@
 const LINKS={
   mariaName:'https://dpla-g6274.tistory.com/category/VITTORIO',
   vittorioName:'https://caveduck.io/ko/share/characters/4dd9205a-b982-496f-9597-72c5ddfc8b49?rc=1qQMZ53X9o&_share_hash=',
-  mariaImage:'https://youtube.com/playlist?list=PLPOv65CdoMiw&si=R1mKH4y3lfv6whMW',
+  mariaImage:'music.html',   // 마리아 그림 클릭 → 레코드 앨범 (재생목록 주소는 music.js 맨 위)
   vittorioImage:'news.html'   // 비토리오 그림 클릭 → 신문 3·4면
 };
 

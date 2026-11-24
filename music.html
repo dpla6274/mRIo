@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <title>V. — MARIA PARK × VITTORIO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Nanum+Myeongjo&display=swap">
+  <link rel="stylesheet" href="music.css?v=6">
+  <script src="music-tracks.js?v=2" defer></script>
+  <script src="music.js?v=5" defer></script>
+</head>
+<body>
+<div class="stage intro" id="stage">
+  <div class="lp" id="lp" role="button" tabindex="0" aria-label="Play / pause"><img src="assets/music/lp.png?v=2" alt="" draggable="false"></div>
+  <div class="sleeve" id="sleeve" role="button" tabindex="0" aria-label="Play the record"></div>
+
+  <section class="col" id="col">
+    <div class="bar" id="bar">
+      <div class="row">
+        <button class="btn" id="bPrev" type="button" aria-label="Previous"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M13 2v10L5 7z"/><rect x="1.5" y="2" width="1.6" height="10"/></svg></button>
+        <button class="btn" id="bPlay" type="button" aria-label="Play / pause">
+          <svg class="i-pause" width="16" height="16" viewBox="0 0 16 16"><rect x="3" y="2" width="3.4" height="12"/><rect x="9.6" y="2" width="3.4" height="12"/></svg>
+          <svg class="i-play" width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 1.8v12.4L14 8z"/></svg>
+        </button>
+        <button class="btn" id="bNext" type="button" aria-label="Next"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 2v10l8-5z"/><rect x="10.9" y="2" width="1.6" height="10"/></svg></button>
+        <div class="track" id="track" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100"><i id="fill"></i><b id="tick"></b></div>
+        <span class="tm" id="tm">0:00 / 0:00</span>
+        <div class="vol" id="vol" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="7">VOL&nbsp;</div>
+      </div>
+    </div>
+    <div class="now" id="now" tabindex="0"><div class="no" id="nNo"></div><div class="t" id="nT"></div><div class="a" id="nA"></div></div>
+    <div class="body" id="body"></div>
+    <nav class="pop" id="pop" aria-label="Records"></nav>
+  </section>
+
+  <nav class="swipe" id="swipe" aria-label="Records"></nav>
+</div>
+<div id="yt" aria-hidden="true"></div>
+</body>
+</html>
