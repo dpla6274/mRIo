@@ -23,8 +23,8 @@ button{all:unset;cursor:pointer}
 /* ── LP: 왼쪽 꽉 차게 ── */
 .lp{position:absolute;left:-470px;top:-90px;width:1180px;height:1180px;border-radius:50%;cursor:pointer;outline:none;z-index:2;
   transition:left var(--open),top var(--open),width var(--open),height var(--open),opacity .8s}
-.intro .lp{left:690px;top:230px;width:540px;height:540px;pointer-events:none;transition:left .85s cubic-bezier(.4,0,.2,1)}
-.pull .lp{left:1060px}
+.intro .lp{left:690px;top:230px;width:540px;height:540px;pointer-events:none}
+.pull .sleeve{left:40px;transition:left .85s cubic-bezier(.4,0,.2,1)}
 .lp img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;animation:spin 1.8s linear infinite;animation-play-state:paused}
 .playing .lp img{animation-play-state:running}
 .lp::after{display:none;content:"";position:absolute;inset:5px;border-radius:50%;box-shadow:0 0 0 1.2px rgba(255,255,255,.45);pointer-events:none}
@@ -52,7 +52,7 @@ button{all:unset;cursor:pointer}
 .vol span.on{opacity:1}
 .vol:hover span.on,.vol:focus-visible span.on{background:var(--red)}
 
-.now{flex:none;margin-top:30px;cursor:default;outline:none;transition:color .45s,opacity .35s}
+.now{flex:none;align-self:flex-start;width:fit-content;max-width:100%;margin-top:30px;cursor:default;outline:none;transition:color .45s,opacity .35s}
 .now .no{font:700 22px/20.5px var(--serif)}
 .now .t{font:400 40px/1.05 var(--serif);letter-spacing:-.5px;margin-top:8px}
 .now .a{font:italic 400 22px/1.2 var(--serif);opacity:.75;margin-top:6px}
@@ -74,12 +74,12 @@ button{all:unset;cursor:pointer}
 .w-sub{font:italic 500 22px/1.3 var(--hand)}
 
 /* 곡 목록 (PC: 제목에 마우스 / 모바일: 탭) */
-.pop{position:absolute;left:0;right:0;top:var(--pop-top,260px);bottom:0;overflow-y:auto;scrollbar-width:none;padding:4px 0 0 28px;
+.pop{position:absolute;left:0;right:0;top:var(--pop-top,260px);bottom:0;overflow-y:auto;scrollbar-width:none;padding:26px 0 0 28px;
   opacity:0;pointer-events:none;transition:opacity .35s}
 .pop::-webkit-scrollbar{display:none}
 /* 세로선만 위아래 그라데이션, 곡명은 흐려지지 않음. 맨 아래에 여유를 둬서 마지막 곡도 가운데쯤까지 올라옴 */
 .pop{background:none;-webkit-mask:none;mask:none;padding-bottom:45%}
-.pop-line{position:absolute;left:3px;top:var(--pop-top,260px);bottom:0;width:1px;pointer-events:none;opacity:0;transition:opacity .35s;
+.pop-line{position:absolute;left:3px;top:calc(var(--pop-top,260px) + 22px);bottom:0;width:1px;pointer-events:none;opacity:0;transition:opacity .35s;
   background:linear-gradient(transparent,rgba(255,255,255,.6) 12%,rgba(255,255,255,.6) 85%,transparent)}
 .list .pop-line{opacity:1}
 .list .pop{opacity:1;pointer-events:auto}
@@ -100,11 +100,17 @@ html.m,html.m body{height:100%;overflow:hidden;display:block;overscroll-behavior
 .m .sleeve{position:absolute;left:8vw;top:calc(50% - 42vw);width:84vw;height:84vw}
 .m .open .sleeve{left:-180vw;top:-36vw;width:124vw;height:124vw}
 .m .lp{position:absolute;left:-48vw;top:-30vw;width:112vw;height:112vw}
-.m .intro .lp{left:14vw;top:calc(50% - 36vw);width:72vw;height:72vw;transition:left .85s cubic-bezier(.4,0,.2,1)}
-.m .pull .lp{left:46vw}
+.m .intro .lp{left:14vw;top:calc(50% - 36vw);width:72vw;height:72vw}
+.m .pull .sleeve{left:-66vw;transition:left .85s cubic-bezier(.4,0,.2,1)}
 .m .col{display:contents}
-.m .bar,.m .swipe,.m .body{position:relative;z-index:4;background:#050505;transition:opacity .8s .6s}
-.m .stage:not(.open) .bar,.m .stage:not(.open) .swipe,.m .stage:not(.open) .body{opacity:0;pointer-events:none}
+/* 아래쪽(재생 바부터)은 불투명한 판이 아래에서 위로 올라옴 — LP는 재생 바 위까지만 보임 */
+.m .stage::before{content:"";position:absolute;left:0;right:0;top:52vw;bottom:0;background:#050505;z-index:3}
+.m .stage::before,.m .bar,.m .swipe,.m .body{transform:translateY(0);transition:transform .9s cubic-bezier(.3,.7,.2,1) .35s}
+.m .bar,.m .swipe,.m .body{position:relative;z-index:4;background:#050505}
+.m .stage:not(.open)::before,.m .stage:not(.open) .bar,.m .stage:not(.open) .swipe,.m .stage:not(.open) .body{transform:translateY(100vh);transition:none}
+.m .stage:not(.open) .bar,.m .stage:not(.open) .swipe,.m .stage:not(.open) .body{pointer-events:none}
+.m .list .body,.m .body{opacity:1!important;transition:transform .9s cubic-bezier(.3,.7,.2,1) .35s}
+.m .pop{transition:none}
 .m .bar{flex:none;margin:0;order:1}
 .m .bar .row{padding:8px 20px 7px}
 .m .swipe{order:2}

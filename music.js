@@ -63,7 +63,7 @@ showTrack(0);
 /* ── 곡 목록 열고 닫기 ── */
 function placePop(){
   if (isM()){ stage.style.setProperty('--pop-m', swipe.getBoundingClientRect().bottom + 'px'); return; }
-  const n = $('now'); col.style.setProperty('--pop-top', (n.offsetTop + n.offsetHeight + 22) + 'px');
+  const n = $('now'); col.style.setProperty('--pop-top', (n.offsetTop + n.offsetHeight) + 'px');   // 제목 바로 밑부터 (틈 없이 → 마우스 옮겨도 안 닫힘)
 }
 const openList = () => {
   placePop(); col.classList.add('list'); swipe.classList.add('list');
@@ -74,7 +74,9 @@ stage.addEventListener('scroll', () => { if (!isM()){ stage.scrollTop = 0; stage
 function closeList(){ col.classList.remove('list'); swipe.classList.remove('list'); }
 function toggleList(){ col.classList.contains('list') ? closeList() : openList(); }
 $('now').addEventListener('mouseenter', () => { if (!isM()) openList(); });
-col.addEventListener('mouseleave', () => { if (!isM()) closeList(); });
+// 제목·목록 밖으로 마우스가 나가면 닫힘
+const inList = el => el && ($('now').contains(el) || pop.contains(el));
+for (const el of [$('now'), pop]) el.addEventListener('mouseleave', e => { if (!isM() && !inList(e.relatedTarget)) closeList(); });
 $('now').addEventListener('click', toggleList);
 $('now').addEventListener('keydown', e => { if (e.key === 'Enter') toggleList(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeList(); });
