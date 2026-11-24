@@ -18,7 +18,6 @@ const mq = matchMedia('(max-width: 899px), (orientation: portrait)');
 function fit(){
   if (mq.matches){ html.classList.add('m'); stage.style.removeProperty('--z'); }
   else { html.classList.remove('m'); stage.style.setProperty('--z', Math.min(innerWidth / 1920, innerHeight / 1000)); }
-  pop.style.setProperty('--pop-top', ($('bar').offsetHeight + 24) + 'px');
 }
 fit(); addEventListener('resize', fit, {passive:true}); mq.addEventListener && mq.addEventListener('change', fit);
 
@@ -63,7 +62,13 @@ function showTrack(i){
 showTrack(0);
 
 /* ── 곡 목록 열고 닫기 ── */
-const openList = () => { col.classList.add('list'); swipe.classList.add('list'); rows[cur].scrollIntoView({block: 'center'}); };
+function placePop(){ const n = $('now'); col.style.setProperty('--pop-top', (n.offsetTop + n.offsetHeight + 22) + 'px'); }
+const openList = () => {
+  placePop(); col.classList.add('list'); swipe.classList.add('list');
+  const r = rows[cur]; pop.scrollTop = r.offsetTop - pop.clientHeight / 2 + r.offsetHeight / 2;   // 목록 안에서만 스크롤
+};
+/* 화면 전체가 밀려 올라가는 것 방지 */
+stage.addEventListener('scroll', () => { if (!isM()){ stage.scrollTop = 0; stage.scrollLeft = 0; } });
 function closeList(){ col.classList.remove('list'); swipe.classList.remove('list'); }
 function toggleList(){ col.classList.contains('list') ? closeList() : openList(); }
 $('now').addEventListener('mouseenter', () => { if (!isM()) openList(); });
@@ -147,11 +152,16 @@ function toggle(){ if (!player || loaded < 0) return play(cur); playing ? player
 col.classList.add('paused');
 
 /* 시작 */
+/* 시작: 커버 안에서 LP가 꺼내지고 → 커버는 왼쪽으로 빠지며 LP가 제자리로 */
+let starting = false;
 function start(){
-  if (!stage.classList.contains('intro')) return;
-  stage.classList.remove('intro'); stage.classList.add('open');
-  setTimeout(() => { fit(); swipeTo(cur, false); }, 50);
+  if (!stage.classList.contains('intro') || starting) return;
+  starting = true; stage.classList.add('pull');
   play(cur);
+  setTimeout(() => {
+    stage.classList.remove('intro', 'pull'); stage.classList.add('open');
+    setTimeout(() => { fit(); swipeTo(cur, false); }, 50);
+  }, 850);
 }
 $('sleeve').addEventListener('click', start);
 // 재생 중 LP를 다시 누르면 → 메인으로
