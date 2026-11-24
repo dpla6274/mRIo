@@ -15,14 +15,16 @@ button{all:unset;cursor:pointer}
 .sleeve{position:absolute;left:660px;top:200px;width:600px;height:600px;z-index:3;cursor:pointer;outline:none;
   background:#000 url(assets/music/cover.png) center/94% no-repeat;
   box-shadow:0 0 0 1.5px rgba(255,255,255,.75),0 0 0 7px #000,0 0 0 8px rgba(255,255,255,.35);
-  transition:opacity .9s ease,transform var(--open),visibility 0s 1.2s}
+  transition:left var(--open),top var(--open),width var(--open),height var(--open),visibility 0s 1.2s}
 .sleeve:hover,.sleeve:focus-visible{box-shadow:0 0 0 1.5px var(--red),0 0 0 7px #000,0 0 0 8px rgba(255,0,0,.5)}
-.open .sleeve{opacity:0;transform:scale(.94);visibility:hidden;pointer-events:none}
+/* LP와 같은 비율로 같이 커지면서 왼쪽으로 빠짐 (LP 540:커버 600 = LP 1180:커버 1310) */
+.open .sleeve{left:-1560px;top:-155px;width:1310px;height:1310px;visibility:hidden;pointer-events:none}
 
 /* ── LP: 왼쪽 꽉 차게 ── */
 .lp{position:absolute;left:-470px;top:-90px;width:1180px;height:1180px;border-radius:50%;cursor:pointer;outline:none;z-index:2;
   transition:left var(--open),top var(--open),width var(--open),height var(--open),opacity .8s}
-.intro .lp{left:690px;top:230px;width:540px;height:540px;opacity:0;pointer-events:none}
+.intro .lp{left:690px;top:230px;width:540px;height:540px;pointer-events:none;transition:left .85s cubic-bezier(.4,0,.2,1)}
+.pull .lp{left:1060px}
 .lp img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;animation:spin 1.8s linear infinite;animation-play-state:paused}
 .playing .lp img{animation-play-state:running}
 .lp::after{display:none;content:"";position:absolute;inset:5px;border-radius:50%;box-shadow:0 0 0 1.2px rgba(255,255,255,.45);pointer-events:none}
@@ -54,7 +56,7 @@ button{all:unset;cursor:pointer}
 .now .no{font:700 22px/20.5px var(--serif)}
 .now .t{font:400 40px/1.05 var(--serif);letter-spacing:-.5px;margin-top:8px}
 .now .a{font:italic 400 22px/1.2 var(--serif);opacity:.75;margin-top:6px}
-.list .now{opacity:0}
+.list .now{color:var(--red)}
 
 .body{flex:1 1 auto;min-height:0;margin-top:34px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent;padding-right:10px;
   transition:opacity .35s}
@@ -72,10 +74,14 @@ button{all:unset;cursor:pointer}
 .w-sub{font:italic 500 22px/1.3 var(--hand)}
 
 /* 곡 목록 (PC: 제목에 마우스 / 모바일: 탭) */
-.pop{position:absolute;left:0;right:0;top:var(--pop-top,60px);bottom:0;overflow-y:auto;scrollbar-width:none;padding:4px 0 0 28px;
+.pop{position:absolute;left:0;right:0;top:var(--pop-top,260px);bottom:0;overflow-y:auto;scrollbar-width:none;padding:4px 0 0 28px;
   opacity:0;pointer-events:none;transition:opacity .35s}
 .pop::-webkit-scrollbar{display:none}
-.pop{background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,.55)) 3px 0/1px 100% no-repeat local;-webkit-mask:linear-gradient(transparent,#000 6%,#000 92%,transparent);mask:linear-gradient(transparent,#000 6%,#000 92%,transparent)}
+/* 세로선만 위아래 그라데이션, 곡명은 흐려지지 않음. 맨 아래에 여유를 둬서 마지막 곡도 가운데쯤까지 올라옴 */
+.pop{background:none;-webkit-mask:none;mask:none;padding-bottom:45%}
+.pop-line{position:absolute;left:3px;top:var(--pop-top,260px);bottom:0;width:1px;pointer-events:none;opacity:0;transition:opacity .35s;
+  background:linear-gradient(transparent,rgba(255,255,255,.6) 12%,rgba(255,255,255,.6) 85%,transparent)}
+.list .pop-line{opacity:1}
 .list .pop{opacity:1;pointer-events:auto}
 .r{position:relative;display:block;padding:7px 0 8px;font:400 20px/1.15 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:#fff;transition:color .45s;outline:none}
 .r b{display:inline-block;width:66px;font-weight:700}
@@ -91,8 +97,11 @@ html.m,html.m body{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto
 .m .stage{width:100%;height:auto;min-height:100vh;zoom:1!important;overflow:visible}
 .m .stage::after{position:fixed}
 .m .sleeve{position:fixed;left:8vw;top:calc(50vh - 42vw);width:84vw;height:84vw}
-.m .lp{position:fixed;left:-48vw;top:-30vw;width:112vw;height:112vw;transition:opacity .8s}
-.m .intro .lp{left:-48vw;top:-30vw;width:112vw;height:112vw}
+.m .open .sleeve{left:-180vw;top:-36vw;width:124vw;height:124vw}
+.m .lp{position:fixed;left:-48vw;top:-30vw;width:112vw;height:112vw}
+.m .intro .lp{left:14vw;top:calc(50vh - 36vw);width:72vw;height:72vw;transition:left .85s cubic-bezier(.4,0,.2,1)}
+.m .pull .lp{left:46vw}
+.m .open .lp{transition:left var(--open),top var(--open),width var(--open),height var(--open)}
 .m .stage::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(52vw + 128px);background:#050505;z-index:1}
 .m .col{position:relative;left:auto;right:auto;top:auto;bottom:auto;display:block;padding:0 20px 60px;z-index:3}
 .m .bar{position:fixed;left:20px;right:20px;top:52vw;z-index:4;background:#050505}
@@ -112,7 +121,7 @@ html.m,html.m body{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto
 .m .sw .a{font:italic 400 14px/1.2 var(--serif);opacity:.75;margin-top:3px}
 .m .body{margin-top:0;padding-top:calc(52vw + 150px);overflow:visible;padding-right:0}
 .m .pop{position:fixed;left:0;right:0;top:calc(52vw + 128px);bottom:0;padding:10px 20px 40px 46px;background:#050505;z-index:5}
-.m .pop{background-position:24px 0;-webkit-mask:none;mask:none}
+.m .pop{padding-bottom:50vh}.m .pop-line{display:none}
 .m .r{font-size:17px}
 .m .r b{width:56px}
 @media (prefers-reduced-motion:reduce){:root{--open:.01s}.lp img{animation:none}}
