@@ -107,28 +107,37 @@ viewport.addEventListener('pointercancel',endDrag);
 /* ── 페이지 전환: 윤전기 (신문이 아래에서 위로 올라옴) ──
    신문 페이지를 미리 뒤에서 불러 두었다가 밀어 올리고, 다 올라오면 실제로 이동 → 끊김 없음 */
 let pressSheet=null, pressing=false;
+let pressReady=false;
 function preparePress(){
   if(pressSheet)return;
   pressSheet=document.createElement('div');
   pressSheet.className='press-sheet';
   pressSheet.innerHTML='<iframe src="news.html" title="" tabindex="-1" aria-hidden="true"></iframe>';
-  document.body.appendChild(pressSheet);
+  pressSheet.firstChild.addEventListener('load',()=>{pressReady=true;},{once:true});
+  document.body.appendChild(pressSheet);   // display:none 상태로 불러만 둠 → 화면에 그리지 않아 가벼움
 }
 function pressTo(url){
   if(pressing)return; pressing=true;
   preparePress();
   const go=()=>{
+    pressSheet.classList.add('show'); void pressSheet.offsetWidth;
     pressSheet.classList.add('rolling');
     const done=()=>{location.href=url;};
     pressSheet.addEventListener('transitionend',done,{once:true});
     setTimeout(done,1600);   // 혹시 transitionend가 안 오면
   };
-  requestAnimationFrame(()=>requestAnimationFrame(go));
+  // 신문이 아직 덜 불러와졌으면 잠깐(최대 1.2초) 기다렸다가 올림
+  const t0=performance.now();
+  (function wait(){ if(pressReady||performance.now()-t0>1200) requestAnimationFrame(()=>requestAnimationFrame(go)); else setTimeout(wait,50); })();
 }
 // 메인 화면이 다 뜬 뒤 조용히 미리 불러 둠
-if(window===window.top)window.addEventListener('load',()=>setTimeout(preparePress,800));   // 신문 페이지 안에 미리 불려 있을 땐 다시 불러오지 않음
+// 비토리오 그림에 마우스를 올리거나 손가락이 닿을 때만 신문을 미리 불러 둠 (메인이 처음부터 무거워지지 않게)
+if(window===window.top){
+  const v=document.querySelector('[data-link="vittorioImage"]');
+  if(v){ v.addEventListener('pointerenter',preparePress,{once:true}); v.addEventListener('touchstart',preparePress,{once:true,passive:true}); }
+}
 // 뒤로 가기로 돌아왔을 때 덮여 있는 신문 치우기
-window.addEventListener('pageshow',e=>{if(pressSheet){pressSheet.classList.remove('rolling');pressing=false;}});
+window.addEventListener('pageshow',e=>{if(pressSheet){pressSheet.classList.remove('rolling','show');pressing=false;}});
 
 /* ── 모바일 첫 화면: 마리아 쪽에서 가운데로 천천히 이동 + "드래그" 안내 ── */
 (function(){

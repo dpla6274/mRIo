@@ -16,47 +16,67 @@ const cv = document.createElement('canvas');
 cv.className = 'scene-canvas'; cv.width = 1920; cv.height = 1080;
 const gl = cv.getContext('webgl', {premultipliedAlpha:false, antialias:false, preserveDrawingBuffer:false});
 if (!gl) return;
-const MAX = 80;
-const vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
-const fs = `precision highp float;
-uniform sampler2D uBase,uNoise,uMask;uniform vec4 uF[${MAX}];uniform int uN;
-void main(){
- vec2 px=vec2(gl_FragCoord.x,1080.-gl_FragCoord.y);
- vec2 uv=gl_FragCoord.xy/vec2(1920.,1080.);
- float s=0.;
- for(int i=0;i<${MAX};i++){ if(i>=uN)break; vec4 f=uF[i]; vec2 d=px-f.xy; float r2=dot(d,d); float m=16.*f.z*f.z;
-   if(r2<m) s+=f.w*exp(-r2/(2.*f.z*f.z)); }
- s=min(s,1.);
- vec3 P=texture2D(uBase,uv).rgb;
- vec3 Q=1.-(1.-P)*(1.-s);
- float n=max(texture2D(uNoise,uv).r,1./255.);
- float a=texture2D(uMask,uv).r;
- gl_FragColor=vec4(mix(Q,min(Q/n,vec3(1.)),a),1.);
-}`;
+/* 1단계: 눈송이마다 자기 둘레 네모에만 그려서 '눈 지도'를 만듦 (더하기 혼합)
+   2단계: 눈 지도 + 배경 + 노이즈를 한 번에 합성 (픽셀마다 텍스처 4번 읽기)
+   → 예전처럼 모든 픽셀이 71개를 다 계산하지 않아 훨씬 가벼움 */
 function sh(t,src){const s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw gl.getShaderInfoLog(s);return s;}
-let prog;
-try{ prog=gl.createProgram(); gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs)); gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs)); gl.linkProgram(prog); }catch(e){ return; }
-gl.useProgram(prog);
-const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
-gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-const loc=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
-const uF=gl.getUniformLocation(prog,'uF'), uN=gl.getUniformLocation(prog,'uN');
+function mk(vs,fs){const p=gl.createProgram();gl.attachShader(p,sh(gl.VERTEX_SHADER,vs));gl.attachShader(p,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw 'link';return p;}
+let pFlake,pComp;
+try{
+ pFlake=mk(`attribute vec2 aPos;attribute vec2 aOff;attribute vec2 aSA;varying vec2 vD;varying vec2 vSA;
+  void main(){vD=aOff;vSA=aSA;vec2 p=aPos+aOff;gl_Position=vec4(p.x/960.-1.,1.-p.y/540.,0.,1.);}`,
+  `precision mediump float;varying vec2 vD;varying vec2 vSA;
+  void main(){float r2=dot(vD,vD);gl_FragColor=vec4(vSA.y*exp(-r2/(2.*vSA.x*vSA.x)),0.,0.,1.);}`);
+ pComp=mk('attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}',
+  `precision highp float;uniform sampler2D uBase,uNoise,uMask,uSnow;
+  void main(){vec2 uv=gl_FragCoord.xy/vec2(1920.,1080.);
+   float s=min(texture2D(uSnow,uv).r,1.);
+   vec3 P=texture2D(uBase,uv).rgb;vec3 Q=1.-(1.-P)*(1.-s);
+   float n=max(texture2D(uNoise,uv).r,1./255.);float a=texture2D(uMask,uv).r;
+   gl_FragColor=vec4(mix(Q,min(Q/n,vec3(1.)),a),1.);}`);
+}catch(e){ return; }
+// 눈 지도 그릴 판(FBO)
+const snowTex=gl.createTexture(); gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D,snowTex);
+gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1920,1080,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+for(const [k,v] of [[gl.TEXTURE_MIN_FILTER,gl.NEAREST],[gl.TEXTURE_MAG_FILTER,gl.NEAREST],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D,k,v);
+const fbo=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
+gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,snowTex,0);
+gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+const quad=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,quad); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+const fbuf=gl.createBuffer();
+const N=FLAKES.length, verts=new Float32Array(N*6*6);
+const CORN=[[-1,-1],[1,-1],[-1,1],[-1,1],[1,-1],[1,1]];
 function tex(unit,name,image){
   const t=gl.createTexture(); gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);
   for(const [k,v] of [[gl.TEXTURE_MIN_FILTER,gl.NEAREST],[gl.TEXTURE_MAG_FILTER,gl.NEAREST],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D,k,v);
-  gl.uniform1i(gl.getUniformLocation(prog,name),unit);
+  gl.useProgram(pComp); gl.uniform1i(gl.getUniformLocation(pComp,name),unit);
 }
 const load=src=>new Promise((ok,no)=>{const i=new Image();i.decoding='async';i.onload=()=>ok(i);i.onerror=no;i.src=src;});
 
 const pos=FLAKES.map(f=>({hx:f[0],hy:f[1],x:f[0],y:f[1],s:f[2],a:f[3]}));
-const data=new Float32Array(MAX*4);
 let mouse=null, raf=0, ready=false;
 function draw(){
-  pos.forEach((p,i)=>{data[i*4]=p.x;data[i*4+1]=p.y;data[i*4+2]=p.s;data[i*4+3]=p.a;});
-  gl.uniform4fv(uF,data); gl.uniform1i(uN,pos.length);
+  // 1) 눈 지도
+  let k=0;
+  for(const p of pos){ const r=4*p.s;
+    for(const c of CORN){ verts[k++]=p.x; verts[k++]=p.y; verts[k++]=c[0]*r; verts[k++]=c[1]*r; verts[k++]=p.s; verts[k++]=p.a; } }
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo); gl.viewport(0,0,1920,1080);
+  gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(pFlake); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE,gl.ONE);
+  gl.bindBuffer(gl.ARRAY_BUFFER,fbuf); gl.bufferData(gl.ARRAY_BUFFER,verts,gl.DYNAMIC_DRAW);
+  const L=n=>gl.getAttribLocation(pFlake,n);
+  [['aPos',0],['aOff',2],['aSA',4]].forEach(([n,o])=>{const l=L(n);gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,24,o*4);});
+  gl.drawArrays(gl.TRIANGLES,0,N*6);
+  [ 'aPos','aOff','aSA' ].forEach(n=>gl.disableVertexAttribArray(L(n)));
+  gl.disable(gl.BLEND); gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  // 2) 합성
+  gl.useProgram(pComp); gl.bindBuffer(gl.ARRAY_BUFFER,quad);
+  const lp=gl.getAttribLocation(pComp,'p'); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
+  gl.uniform1i(gl.getUniformLocation(pComp,'uSnow'),3);
   gl.viewport(0,0,1920,1080); gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  gl.disableVertexAttribArray(lp);
 }
 function step(){
   raf=0; let moving=false;

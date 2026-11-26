@@ -173,7 +173,7 @@ function play(i){
   if (TRACKS[i].file){
     if (!useFile && player && player.pauseVideo) player.pauseVideo();
     useFile = true;
-    if (loaded !== i){ loaded = i; audio.src = TRACKS[i].file; }
+    if (loaded !== i){ loaded = i; audio.src = encodeURI(TRACKS[i].file); }
     audio.play().catch(() => {}); return;
   }
   if (useFile){ audio.pause(); useFile = false; }
